@@ -12,7 +12,7 @@ import styles from "assets/jss/material-kit-react/customCheckboxRadioSwitch.js";
 const useStyles = makeStyles(styles);
 
 export default function CustomRadio(){
-  const [selectedEnabled, setSelectedEnabled] = React.useState("b");
+  const [selectedEnabled, setSelectedEnabled] = React.useState("");
   const classes = useStyles();
   const wrapperDiv = classNames(
     classes.checkboxAndRadio,
@@ -25,8 +25,8 @@ export default function CustomRadio(){
           control={
             <Radio
               checked={selectedEnabled === "a"}
-              onChange={() => setSelectedEnabled("a")}
-              value="a"
+              onChange={(event) => {setSelectedEnabled("a"); console.log(event.target.value);}}
+              value={true}
               name="radio button enabled"
               aria-label="A"
               icon={
@@ -54,7 +54,7 @@ export default function CustomRadio(){
             <Radio
               checked={selectedEnabled === "b"}
               onChange={() => setSelectedEnabled("b")}
-              value="b"
+              value={false}
               name="radio button enabled"
               aria-label="B"
               icon={

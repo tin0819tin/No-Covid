@@ -15,6 +15,7 @@ import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Button from "components/CustomButtons/Button.js";
 import HeaderLinks from "components/Header/HeaderLinks.js";
+import MyHeaderLinks from "components/Header/MyHeaderLink.js";
 import Parallax from "components/Parallax/Parallax.js";
 
 import styles from "assets/jss/material-kit-react/views/landingPage.js";
@@ -37,11 +38,11 @@ export default function LandingPage(props) {
         color="transparent"
         routes={dashboardRoutes}
         brand="Welcome to No-Covid"
-        rightLinks={<HeaderLinks />}
+        rightLinks={<MyHeaderLinks />}
         fixed
         changeColorOnScroll={{
           height: 400,
-          color: "white",
+          color: "dark",
         }}
         {...rest}
       />
@@ -73,7 +74,7 @@ export default function LandingPage(props) {
       </Parallax>
       <div className={classNames(classes.main, classes.mainRaised)}>
         <div className={classes.container}>
-          <ProductSection />
+          {/* <ProductSection /> */}
           <TeamSection />
           {/* <WorkSection /> */}
         </div>
