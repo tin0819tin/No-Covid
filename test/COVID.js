@@ -28,47 +28,53 @@ contract('COVID', (accounts) => {
   });
 
 
-  // // Test totalSupply()
-  // it('testTotalSupply', async () => {
-  //   const COVIDInstance = await COVID.deployed();
-  //   const TotalSupply = await COVIDInstance.totalSupply.call();
-
-  //   assert.equal(TotalSupply.valueOf(), 10000, "Total supply should be 10000 NML initially");
-  // });
-
-  // // Test testTransfer()
-  // it('testTransfer', async () => {
-  //   const COVIDInstance = await COVID.deployed();
-  //   // Notice that here we use transfer() instead of .call() since .call() make no changes on the blockchain
-  //   const success_transfer = await COVIDInstance.transfer(accounts[1], 100);
-  //   const account1_balance = await COVIDInstance.balanceOf.call(accounts[1]);
-  //   const account0_balance = await COVIDInstance.balanceOf.call(accounts[0]);
-
-  //   assert.equal(account1_balance.valueOf(), 100, "Account1 should have 80 NML!!!");
-  //   assert.equal(account0_balance.valueOf(), 10000 - 100, "Account0 should have 9920 NML!!!");
-
-  // });
-
-  // // Test testAllowance()
-  // it('testAllowance', async () => {
-  //   const COVIDInstance = await COVID.deployed();
-  //   // Notice that here we use transfer() instead of .call() since .call() make no changes on the blockchain
-  //   const success_transfer = await COVIDInstance.approve(accounts[1], 3000);
-  //   const allowance = await COVIDInstance.allowance.call(accounts[0], accounts[1]);
-
-  //   assert.equal(allowance.valueOf(), 3000, "Allowance from account0->account1 should be 3000!!!");
-
-  // });
-
-  // // Test testApprove()
-  // it('testApprove', async () => {
-  //   const COVIDInstance = await COVID.deployed();
-  //   // Notice that here we use approve() instead of .call() since .call() make no changes on the blockchain
-  //   const success_transfer = await COVIDInstance.approve(accounts[1], 10000);
-  //   const allowance = await COVIDInstance.allowance.call(accounts[0], accounts[1]);
-
-  //   assert.equal(allowance.valueOf(), 10000, "Allowance from account0->account1 should be 10000!!!");
-
-  // });
+  //Test GetAllDeliver()
+  it('test GetAllDeliver()', async () => {
+    const COVIDInstance = await COVID.deployed();
+    var i;
+    for (i = 0; i < 5; i++) {
+      await COVIDInstance.UploadHealthStatus(
+        "Cheng Yen",
+        "Hsieh",
+        "Yen@Gmail.com",
+        "0918860806",
+        false,
+        false,
+        true,
+        false, { from: accounts[i] });  // .call()can take multiple arguments
+    }
+    const Delivers = await COVIDInstance.GetAllDeliver.call();  // .call()can take multiple arguments
+    console.log(Delivers)
+    for (i = 0; i < 5; i++) {
+      assert.equal(Delivers[i], accounts[i], "Address of the ${i}-th account is wrong!");
+    }
+  });
+  //Test GetAllDeliver()
+  it('test DeleteDeliver()', async () => {
+    const COVIDInstance = await COVID.deployed();
+    var i;
+    for (i = 0; i < 5; i++) {
+      await COVIDInstance.UploadHealthStatus(
+        "Cheng Yen",
+        "Hsieh",
+        "Yen@Gmail.com",
+        "0918860806",
+        false,
+        false,
+        true,
+        false, { from: accounts[i] });  // .call()can take multiple arguments
+    }
+    await COVIDInstance.DeleteDeliver({ from: accounts[3] });  // .call()can take multiple arguments
+    const Delivers = await COVIDInstance.GetAllDeliver.call();  // .call()can take multiple arguments
+    console.log(Delivers)
+    for (i = 0; i < 5; i++) {
+      if (i < 3) {
+        assert.equal(Delivers[i], accounts[i], "Address of the ${i}-th account is wrong!");
+      }
+      else if (i == 4) {
+        assert.equal(Delivers[i - 1], accounts[i], "Address of the ${i}-th account is wrong!");
+      }
+    }
+  });
 
 });
