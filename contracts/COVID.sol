@@ -14,15 +14,47 @@ Contract Description:
         bool _Symptom): Upload the health status of the sender
 
 2. DeleteDeliver(): Delete himself from the Queue when he can not work
+
+3. GetMatchedCustomer(): Return the address of customer
+    @Return: (bool matched, address customer)
+        1. If matched == false: then the deliver has not been matched yet
+        2. if matched == true: then customer denotes the address(Ethereum)  
+
+4. GetOrderByAddress(address _customer)public view returns
+    (int256[], string memory, string memory, string memory, string memory)
+    @ Returns: (Product number[], real_address, phone)
+
+5. GetProduct():
+    @ Product name in tuple: (Product1, Product2, ...., Product6)
+
+6. FinishMatch(): Finish the match with the customer and (send photos and location)
 *********** Client Side ***********
 1. GetHealthStatus(address DP): get the health status of DP
     @Return: (_FirstName, _LastName, _Email, _Phone, _TravelOrNot, _otherSymptom, _Contact, _Symptom)
 
 2. GetAllDeliver(): get the addresses of all available delivery people
     @Return: [] Array containing the addresses of all delivery people
+
+3. MatchWithDeliver(address _deliver): Modify the "customer" property of the Deliver
+
+4. UploadOrder(
+        int256[] _product_num,
+        string memory _real_address,
+        string memory _phone
+    ): Upload the order and some information of customer
 */
 
 contract COVID {
+    /********** 
+    * Struct Definition (mapping)
+    ************
+    */
+    // Delivering history
+    struct History {
+        mapping(int [2] => bool) has_visited; // whether this coordinate(x,y) has been visited
+        int[2][] log; // all the history will be stored in the log
+    }
+
     // Delivery Person
     struct Deliver {
         string FirstName;
@@ -35,17 +67,35 @@ contract COVID {
         bool Symptom;
         bool exist; // whether this person exist
         uint256 id; // the id to help us find this guy in the array
+        address customer; // the address of the matched customer
+        bool matched; // whether this deliver is matched
+        History history; // all the locations where this deliver has been before
     }
+    // Customer
+    struct Customer {
+        int256[6] Product_num; // how many of them are ordered for each product
+        string real_address;
+        string phone;
+    }
+    /********** 
+    * Private data structures (mapping)
+    ************
+    */
     // Define Set to record all the delivery person
     // Health State related
-    mapping(address => Deliver) private _HealthStatus;
+    mapping(address => Deliver) private _DeliverStatus;
     address[] private Delivers;
+
+    // Record the Order of a customer
+    mapping(address => Customer) private _CustomerOrder;
 
     /*************
      * Delivery Side
      ***************
      */
     // Upload the health status
+    event UpdateHealth(address DP);
+
     function UploadHealthStatus(
         string memory _FirstName,
         string memory _LastName,
@@ -56,35 +106,86 @@ contract COVID {
         bool _Contact,
         bool _Symptom
     ) public returns (bool) {
-        if (!_HealthStatus[msg.sender].exist) {
+        if (!_DeliverStatus[msg.sender].exist) {
             //Add this deliver person into the array
             Delivers.push(msg.sender);
-            _HealthStatus[msg.sender].id = Delivers.length - 1;
+            _DeliverStatus[msg.sender].id = Delivers.length - 1;
         }
-        _HealthStatus[msg.sender].FirstName = _FirstName;
-        _HealthStatus[msg.sender].LastName = _LastName;
-        _HealthStatus[msg.sender].Email = _Email;
-        _HealthStatus[msg.sender].Phone = _Phone;
-        _HealthStatus[msg.sender].TravelOrNot = _TravelOrNot;
-        _HealthStatus[msg.sender].otherSymptom = _otherSymptom;
-        _HealthStatus[msg.sender].Contact = _Contact;
-        _HealthStatus[msg.sender].Symptom = _Symptom;
-        _HealthStatus[msg.sender].exist = true;
+        _DeliverStatus[msg.sender].FirstName = _FirstName;
+        _DeliverStatus[msg.sender].LastName = _LastName;
+        _DeliverStatus[msg.sender].Email = _Email;
+        _DeliverStatus[msg.sender].Phone = _Phone;
+        _DeliverStatus[msg.sender].TravelOrNot = _TravelOrNot;
+        _DeliverStatus[msg.sender].otherSymptom = _otherSymptom;
+        _DeliverStatus[msg.sender].Contact = _Contact;
+        _DeliverStatus[msg.sender].Symptom = _Symptom;
+        _DeliverStatus[msg.sender].exist = true;
         // Success
+        emit UpdateHealth(msg.sender);
         return true;
     }
 
     // Delete Delivery Person
     function DeleteDeliver() public {
         address person = msg.sender;
-        if (_HealthStatus[person].exist) {
-            _HealthStatus[person].exist = false;
+        if (_DeliverStatus[person].exist) {
+            _DeliverStatus[person].exist = false;
 
             // Since solidity does not have set, we need to swap the person with the last person
-            uint256 index = _HealthStatus[person].id;
+            uint256 index = _DeliverStatus[person].id;
             Delivers[index] = Delivers[Delivers.length - 1];
             Delivers.pop();
         }
+    }
+
+    // Get the address of matched customer
+    function GetMatchedCutomer() public view returns (bool, address) {
+        Deliver memory DP = _DeliverStatus[msg.sender];
+        return (DP.matched, DP.customer);
+    }
+
+    function GetOrderByAddress(address _customer)
+        public
+        view
+        returns (
+            int256[] memory,
+            string memory,
+            string memory
+        )
+    {
+        Customer memory customer = _CustomerOrder[_customer];
+        return (customer.Product_num, customer.real_address, customer.phone);
+    }
+
+    function FinishMatch() public {
+        return (
+            _DeliverStatus[msg.sender].exist == true,
+            "FinishMatch:This Deliver does not exist"
+        );
+        _DeliverStatus[msg.sender].matched = false;
+    }
+
+    // Get all the product name
+    function GetProduct()
+        public
+        view
+        returns (
+            string memory,
+            string memory,
+            string memory,
+            string memory,
+            string memory,
+            string memory
+        )
+    {
+        return (
+            "Chocolate Cake",
+            "Cupcake",
+            "Ice Cream",
+            "Donut",
+            "Macaron",
+            "Milkshake"
+        );
     }
 
     /**************
@@ -107,7 +208,7 @@ contract COVID {
             bool
         )
     {
-        Deliver memory deliver = _HealthStatus[Deliv];
+        Deliver memory deliver = _DeliverStatus[Deliv];
 
         // test whether this person exist
         require(
@@ -132,5 +233,30 @@ contract COVID {
     function GetAllDeliver() public view returns (address[] memory) {
         // Mark the returned type as memory so the returned thing is not the address of Delivers but the array
         return Delivers;
+    }
+
+    // Match with the Deliver
+    function MatchWithDeliver(address _address) public {
+        // test whether this person exist
+        require(
+            _DeliverStatus[_address].exist == true,
+            "MatchWithDeliver: this delivery person does not exist!"
+        );
+        // _address: Deliver msg.sender:customer
+        _DeliverStatus[_address].customer = msg.sender;
+        _DeliverStatus[_address].matched = true;
+    }
+
+    // Upload the Order of Cutomer
+    function UploadOrder(
+        int256[] memory _product_num,
+        string memory _real_address,
+        string memory _phone
+    ) public {
+        Customer storage customer = _CustomerOrder[msg.sender];
+
+        customer.Product_num = _product_num;
+        customer.real_address = _real_address;
+        customer.phone = _phone;
     }
 }
