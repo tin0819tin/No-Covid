@@ -21,13 +21,13 @@ Contract Description:
         2. if matched == true: then customer denotes the address(Ethereum)  
 
 4. GetOrderByAddress(address _customer)public view returns
-    (int256[], string memory, string memory, string memory, string memory)
+    (int256[], string memory, string memory)
     @ Returns: (Product number[], real_address, phone)
 
 5. GetProduct():
     @ Product name in tuple: (Product1, Product2, ...., Product6)
 
-6. FinishMatch(): Finish the match with the customer and (send photos and location)
+6. FinishMatch(address customer): Finish the match with the customer and inform the customer to take his order(send photos and location)
 *********** Client Side ***********
 1. GetHealthStatus(address DP): get the health status of DP
     @Return: (_FirstName, _LastName, _Email, _Phone, _TravelOrNot, _otherSymptom, _Contact, _Symptom)
@@ -42,6 +42,8 @@ Contract Description:
         string memory _real_address,
         string memory _phone
     ): Upload the order and some information of customer
+5. OrderArrive(): 
+    @ Return: bool  => denotes whether the order has arrived
 */
 
 contract COVID {
@@ -77,6 +79,7 @@ contract COVID {
         int256[6] Product_num; // how many of them are ordered for each product
         string real_address;
         string phone;
+        bool arrived; // whether the order has arrived
     }
     /**********
      * Private data structures (mapping)
@@ -158,12 +161,13 @@ contract COVID {
         return (customer.Product_num, customer.real_address, customer.phone);
     }
 
-    function FinishMatch() public {
+    function FinishMatch(address customer) public {
         require(
             _DeliverStatus[msg.sender].exist == true,
             "FinishMatch:This Deliver does not exist"
         );
         _DeliverStatus[msg.sender].matched = false;
+        _CustomerOrder[customer].arrived = true;
     }
 
     // Get all the product name
@@ -259,5 +263,12 @@ contract COVID {
         customer.Product_num = _product_num;
         customer.real_address = _real_address;
         customer.phone = _phone;
+        customer.arrived = false;
+    }
+
+    function OrderArrive() public view returns (bool) {
+        // Whether the order arrived
+        bool arrived = _CustomerOrder[msg.sender].arrived;
+        return arrived;
     }
 }
