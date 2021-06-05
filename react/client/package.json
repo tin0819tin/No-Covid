@@ -1,0 +1,62 @@
+{
+  "name": "material-kit-react",
+  "version": "1.10.0",
+  "description": "Material Kit React. Coded by Creative Tim",
+  "private": true,
+  "main": "src/index.js",
+  "dependencies": {
+    "@babel/core": "7.14.0",
+    "@material-ui/core": "4.11.4",
+    "@material-ui/icons": "4.11.2",
+    "antd": "^4.16.1",
+    "classnames": "2.3.1",
+    "faker": "^5.5.3",
+    "moment": "2.29.1",
+    "node-sass": "6.0.0",
+    "nouislider": "15.1.0",
+    "prop-types": "15.7.2",
+    "react": "17.0.2",
+    "react-datetime": "3.0.4",
+    "react-dom": "17.0.2",
+    "react-router-dom": "5.2.0",
+    "react-scripts": "4.0.3",
+    "react-slick": "0.28.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "7.13.16",
+    "@babel/plugin-proposal-class-properties": "7.13.0",
+    "@babel/preset-env": "7.14.1",
+    "@babel/preset-react": "7.13.13",
+    "eslint-config-prettier": "8.3.0",
+    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-react": "7.23.2",
+    "gulp": "4.0.2",
+    "gulp-append-prepend": "1.0.9",
+    "prettier": "2.3.0"
+  },
+  "optionalDependencies": {
+    "typescript": "4.2.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && gulp licenses",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint:check": "eslint . --ext=js,jsx;  exit 0",
+    "lint:fix": "eslint . --ext=js,jsx --fix;  exit 0",
+    "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start",
+    "build-package-css": "node-sass src/assets/scss/material-kit-react.scss dist/material-kit-react.css",
+    "build-package": "npm run build-package-css && babel src --out-dir dist",
+    "compile-sass": "node-sass src/assets/scss/material-kit-react.scss src/assets/css/material-kit-react.css",
+    "minify-sass": "node-sass src/assets/scss/material-kit-react.scss src/assets/css/material-kit-react.min.css --output-style compressed",
+    "map-sass": "node-sass src/assets/scss/material-kit-react.scss src/assets/css/material-kit-react.css --source-map true"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": []
+  }
+}
