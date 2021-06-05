@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "classnames";
+import PropTypes from "prop-types";
 // material-ui components
 import { makeStyles } from "@material-ui/core/styles";
 import Radio from "@material-ui/core/Radio";
@@ -11,22 +12,24 @@ import styles from "assets/jss/material-kit-react/customCheckboxRadioSwitch.js";
 
 const useStyles = makeStyles(styles);
 
-export default function CustomRadio(){
-  const [selectedEnabled, setSelectedEnabled] = React.useState("");
+const CustomRadio = React.forwardRef((props, ref) => {
+  const [selectedEnabled, setSelectedEnabled] = React.useState(null);
   const classes = useStyles();
   const wrapperDiv = classNames(
     classes.checkboxAndRadio,
     classes.checkboxAndRadioHorizontal
   );
   return (
-    <div>
-      <div className={wrapperDiv}>
+    <div >
+      <div className={wrapperDiv} >
         <FormControlLabel
+          // inputRef={ref} 
           control={
             <Radio
-              checked={selectedEnabled === "a"}
-              onChange={(event) => {setSelectedEnabled("a"); console.log(event.target.value);}}
+              checked={selectedEnabled === true}
+              onChange={(event) => {setSelectedEnabled(true); props.onChange(true);}}
               value={true}
+              // inputRef={ref}
               name="radio button enabled"
               aria-label="A"
               icon={
@@ -52,8 +55,8 @@ export default function CustomRadio(){
         <FormControlLabel
           control={
             <Radio
-              checked={selectedEnabled === "b"}
-              onChange={() => setSelectedEnabled("b")}
+              checked={selectedEnabled === false}
+              onChange={(event) => {setSelectedEnabled(false); props.onChange(false)}}
               value={false}
               name="radio button enabled"
               aria-label="B"
@@ -78,4 +81,12 @@ export default function CustomRadio(){
       </div>
     </div>
   );
-}
+});
+
+CustomRadio.propTypes = {
+  onClick: PropTypes.func,
+
+
+}; 
+
+export default CustomRadio;

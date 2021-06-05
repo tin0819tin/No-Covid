@@ -1,10 +1,11 @@
+import faker from "faker";
 import React from "react";
 // react component for creating beautiful carousel
 import Carousel from "react-slick";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 // @material-ui/icons
-import LocationOn from "@material-ui/icons/LocationOn";
+import {LocationOn, Favorite, InsertEmoticon, Grade} from "@material-ui/icons";
 // core components
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
@@ -36,34 +37,34 @@ export default function SectionCarousel() {
             <Card carousel>
               <Carousel {...settings}>
                 <div>
-                  <img src={image1} alt="First slide" className="slick-image" />
+                  <img src={faker.image.image()} alt="First slide" className="slick-image" />
                   <div className="slick-caption">
-                    <h4>
-                      <LocationOn className="slick-icons" />
-                      Yellowstone National Park, United States
-                    </h4>
+                    <h3>
+                      <Favorite className="slick-icons" />
+                      Safe
+                    </h3>
                   </div>
                 </div>
                 <div>
                   <img
-                    src={image2}
+                    src={faker.image.food()}
                     alt="Second slide"
                     className="slick-image"
                   />
                   <div className="slick-caption">
-                    <h4>
-                      <LocationOn className="slick-icons" />
-                      Somewhere Beyond, United States
-                    </h4>
+                    <h3>
+                      <InsertEmoticon className="slick-icons" />
+                      Delicious
+                    </h3>
                   </div>
                 </div>
                 <div>
-                  <img src={image3} alt="Third slide" className="slick-image" />
+                  <img src={faker.image.image()} alt="Third slide" className="slick-image" />
                   <div className="slick-caption">
-                    <h4>
-                      <LocationOn className="slick-icons" />
-                      Yellowstone National Park, United States
-                    </h4>
+                    <h3>
+                      <Grade className="slick-icons" />
+                      Secure
+                    </h3>
                   </div>
                 </div>
               </Carousel>

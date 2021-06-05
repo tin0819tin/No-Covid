@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import faker from "faker";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -6,6 +6,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
 import Email from "@material-ui/icons/Email";
+import Phone from "@material-ui/icons/Phone";
 import People from "@material-ui/icons/People";
 // core components
 import Header from "components/Header/Header.js";
@@ -26,15 +27,69 @@ import styles from "assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "assets/img/bg7.jpg";
 
+// Connect to contract using web3
+import getWeb3 from "utils/getWeb3";
+import COVIDContract from "build/contracts/COVID.json"
+
 const useStyles = makeStyles(styles);
 
 export default function LoginPage(props) {
   const [cardAnimaton, setCardAnimation] = useState("cardHidden");
+  const radionref = useRef(null);
+
+  // Web3
+  const [web3, setWeb3] = useState(null);
+  const [account, setAccount] = useState(null);
+  const [networkId, setNetworkId] = useState(null);
+  const [contract, setContract] = useState(null);
+
+  //Form value
   const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [one, setOne] = useState(null)
+  const [two, setTwo] = useState(null)
+  const [three, setThree] = useState(null)
+  const [four, setFour] = useState(null)
+
+  // useEffect(() =>{
+  //   console.log(radionref.current)
+  // });
+
+  // Setup web3.js
+  useEffect(() => {
+    const getweb3 = async () => {
+       const web3result = await getWeb3();
+       setWeb3(web3result);
+    }
+    getweb3();    
+  }, []);
 
   useEffect(() => {
-    console.log(firstName);
-  }, [firstName]);
+    const getaccount = async () => {
+      if(web3 !== null){
+        const accountresult = await web3.eth.getAccounts();
+        setAccount(accountresult);
+        const networkidresult = await web3.eth.net.getId();
+        setNetworkId(networkidresult);
+      }    
+    }
+    getaccount();
+  }, [web3]);
+
+  useEffect(() => {
+    if(networkId !== null){
+      const deployedNetwork = COVIDContract.networks[networkId];
+      // console.log(deployedNetwork.address);
+
+      const instance = new web3.eth.Contract(
+        COVIDContract.abi,
+        deployedNetwork && deployedNetwork.address,
+      );
+      setContract(instance);
+    }
+  }, [networkId]);
 
   setTimeout(function () {
     setCardAnimation("");
@@ -81,11 +136,11 @@ export default function LoginPage(props) {
                           type: "text",
                           required: true,
                           onChange: (event) => setFirstName(event.target.value),
-                          // endAdornment: (
-                          //   <InputAdornment position="end">
-                          //     <People className={classes.inputIconsColor} />
-                          //   </InputAdornment>
-                          // ),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <People className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          ),
                         }}
                       />
                       <CustomInput
@@ -96,11 +151,13 @@ export default function LoginPage(props) {
                         }}
                         inputProps={{
                           type: "text",
-                          // endAdornment: (
-                          //   <InputAdornment position="end">
-                          //     <Email className={classes.inputIconsColor} />
-                          //   </InputAdornment>
-                          // ),
+                          required: true,
+                          onChange: (event) => setLastName(event.target.value),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <People className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          ),
                         }}
                       />
                     </div>
@@ -128,11 +185,13 @@ export default function LoginPage(props) {
                         }}
                         inputProps={{
                           type: "email",
-                          // endAdornment: (
-                          //   <InputAdornment position="end">
-                          //     <Email className={classes.inputIconsColor} />
-                          //   </InputAdornment>
-                          // ),
+                          required: true,
+                          onChange: (event) => setEmail(event.target.value),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Email className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          ),
                         }}
                       />
                       <CustomInput
@@ -143,30 +202,41 @@ export default function LoginPage(props) {
                         }}
                         inputProps={{
                           type: "phone",
-                          // endAdornment: (
-                          //   <InputAdornment position="end">
-                          //     <Email className={classes.inputIconsColor} />
-                          //   </InputAdornment>
-                          // ),
+                          required: true,
+                          onChange: (event) => setPhone(event.target.value),
+                          endAdornment: (
+                            <InputAdornment position="end">
+                              <Phone className={classes.inputIconsColor} />
+                            </InputAdornment>
+                          ),
                         }}
                       />
                     </div>
                     <h5>1. Do you travel to regions/countries affected by the outbreak of the novel coronavirus pneumonia (in the past 14 days)?</h5>
-                    <CustomRadio />
+                    <CustomRadio 
+                      // ref={radionref}
+                      onChange={(newOne) => setOne(newOne)}
+                    />
                     <h5>2. Do you receive people with fever or respiratory symptoms in the epidemic area (in the past 14 days)?</h5>
-                    <CustomRadio />
+                    <CustomRadio 
+                      onChange={(newTwo) => setTwo(newTwo)}
+                    />
                     <h5>3. Have you been in contact with confirmed or suspected cases (in the past 14 days)?</h5>
-                    <CustomRadio />
+                    <CustomRadio 
+                      onChange={(newThree) => setThree(newThree)}
+                    />
                     <h5>4. Do you have fever, cough, fatigue, difficulty breathing, vomiting, diarrhea and other symptoms?</h5>
-                    <CustomRadio />
+                    <CustomRadio 
+                      onChange={(newFour) => setFour(newFour)}
+                    />
                     
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
                     <Button 
                       simple color="primary" 
                       size="lg"
-                      // href="http://localhost:3000/landing-page"
-                      onClick={() => console.log("Submit!!")}
+                      // href="http://localhost:3000/action"
+                      onClick={ () => contract.methods.UploadHealthStatus(firstName, lastName, email, phone, one, two, three, four).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'})}
                     >
                       Submit
                     </Button>
