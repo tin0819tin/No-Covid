@@ -86,9 +86,6 @@ const signupPageStyle = {
   inputIconsColor: {
     color: "#495057",
   },
-  // twoInput: {
-  //   display: inline-flex,
-  // },
 };
 
 export default signupPageStyle;
