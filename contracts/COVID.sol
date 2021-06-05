@@ -45,14 +45,15 @@ Contract Description:
 */
 
 contract COVID {
-    /********** 
-    * Struct Definition (mapping)
-    ************
-    */
+    /**********
+     * Struct Definition (mapping)
+     ************
+     */
     // Delivering history
     struct History {
-        mapping(int [2] => bool) has_visited; // whether this coordinate(x,y) has been visited
-        int[2][] log; // all the history will be stored in the log
+        mapping(int256 => bool) has_visited_x; // whether this coordinate(x,y) has been visited
+        mapping(int256 => bool) has_visited_y; // whether this coordinate(x,y) has been visited
+        int256[2][] log; // all the history will be stored in the log
     }
 
     // Delivery Person
@@ -77,10 +78,10 @@ contract COVID {
         string real_address;
         string phone;
     }
-    /********** 
-    * Private data structures (mapping)
-    ************
-    */
+    /**********
+     * Private data structures (mapping)
+     ************
+     */
     // Define Set to record all the delivery person
     // Health State related
     mapping(address => Deliver) private _DeliverStatus;
@@ -148,7 +149,7 @@ contract COVID {
         public
         view
         returns (
-            int256[] memory,
+            int256[6] memory,
             string memory,
             string memory
         )
@@ -158,7 +159,7 @@ contract COVID {
     }
 
     function FinishMatch() public {
-        return (
+        require(
             _DeliverStatus[msg.sender].exist == true,
             "FinishMatch:This Deliver does not exist"
         );
@@ -249,7 +250,7 @@ contract COVID {
 
     // Upload the Order of Cutomer
     function UploadOrder(
-        int256[] memory _product_num,
+        int256[6] memory _product_num,
         string memory _real_address,
         string memory _phone
     ) public {
