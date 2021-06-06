@@ -101,7 +101,7 @@ contract('COVID', (accounts) => {
     assert.equal(match_custom[0], true, "MatchWithDeliver:Fail to Match the customer!");
 
     // Upload the order
-    await COVIDInstance.UploadOrder([1, 2, 3, 0, 1, 2], "I live in Taipei", "0912345678", { from: accounts[6] });
+    await COVIDInstance.UploadOrder([1, 2, 3, 0, 1, 2], "I live in Taipei", "0912345678", 120, { from: accounts[6] });
 
     // Get the Order by address
     var customer = match_custom[1];
@@ -111,12 +111,14 @@ contract('COVID', (accounts) => {
     var number = [tmp[0][0].toNumber(), tmp[0][1].toNumber(), tmp[0][2].toNumber(), tmp[0][3].toNumber(), tmp[0][4].toNumber(), tmp[0][5].toNumber()];
     var real_address = tmp[1];
     var phone = tmp[2];
+    var total = tmp[3];
     var product_name = await COVIDInstance.GetProduct.call();
     product_name = [product_name[0].toString(), product_name[1].toString(), product_name[2].toString(), product_name[3].toString(), product_name[4].toString(), product_name[5].toString()]
 
     assert.deepEqual(number, [1, 2, 3, 0, 1, 2], "GetOrderByAddress: Number is wrong!");
     assert.equal(real_address, "I live in Taipei", "GetOrderByAddress: Address is Wrong!");
     assert.equal(phone, "0912345678", "GetOrderByAddress: Phone is Wrong!");
+    assert.equal(total, 120, "GetOrderByAddress: Total cost is Wrong!");
     assert.deepEqual(product_name, ["Chocolate Cake", "Cupcake", "Ice Cream", "Donut", "Macaron", "Milkshake"],
       "GetOrderByAddress: Product name is wrong!");
 

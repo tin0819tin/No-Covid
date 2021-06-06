@@ -21,8 +21,8 @@ Contract Description:
         2. if matched == true: then customer denotes the address(Ethereum)  
 
 4. GetOrderByAddress(address _customer)public view returns
-    (int256[], string memory, string memory)
-    @ Returns: (Product number[], real_address, phone)
+    (int256[], string memory, string memory, int memory)
+    @ Returns: (Product number[], real_address, phone, total)
 
 5. GetProduct():
     @ Product name in tuple: (Product1, Product2, ...., Product6)
@@ -40,7 +40,8 @@ Contract Description:
 4. UploadOrder(
         int256[] _product_num,
         string memory _real_address,
-        string memory _phone
+        string memory _phone,
+        int256 memory _total
     ): Upload the order and some information of customer
 5. OrderArrive(): 
     @ Return: bool  => denotes whether the order has arrived
@@ -80,6 +81,7 @@ contract COVID {
         string real_address;
         string phone;
         bool arrived; // whether the order has arrived
+        int256 total; // total cost of the order
     }
     /**********
      * Private data structures (mapping)
@@ -154,11 +156,17 @@ contract COVID {
         returns (
             int256[6] memory,
             string memory,
-            string memory
+            string memory,
+            int256
         )
     {
         Customer memory customer = _CustomerOrder[_customer];
-        return (customer.Product_num, customer.real_address, customer.phone);
+        return (
+            customer.Product_num,
+            customer.real_address,
+            customer.phone,
+            customer.total
+        );
     }
 
     function FinishMatch(address customer) public {
@@ -256,7 +264,8 @@ contract COVID {
     function UploadOrder(
         int256[6] memory _product_num,
         string memory _real_address,
-        string memory _phone
+        string memory _phone,
+        int256 _total
     ) public {
         Customer storage customer = _CustomerOrder[msg.sender];
 
@@ -264,6 +273,7 @@ contract COVID {
         customer.real_address = _real_address;
         customer.phone = _phone;
         customer.arrived = false;
+        customer.total = _total;
     }
 
     function OrderArrive() public view returns (bool) {
