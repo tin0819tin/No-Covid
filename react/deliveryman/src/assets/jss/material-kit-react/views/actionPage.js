@@ -1,6 +1,6 @@
 import { container } from "assets/jss/material-kit-react.js";
 
-const signupPageStyle = {
+const actionPageStyle = {
   container: {
     ...container,
     zIndex: "2",
@@ -129,6 +129,11 @@ const signupPageStyle = {
     lineHeight: "1.4",
     color: "#555",
   },
+  list: {
+    width: '100%',
+    maxWidth: 360,
+    // backgroundColor: theme.palette.background.paper,
+  }
 };
 
-export default signupPageStyle;
+export default actionPageStyle;

@@ -1,5 +1,6 @@
 import faker from "faker";
 import React from "react";
+import {Link} from "react-router-dom";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 // @material-ui/core components
@@ -34,7 +35,7 @@ const useStyles = makeStyles(styles);
 
 export default function LandingPage(props) {
   const classes = useStyles();
-  const { ...rest } = props;
+  const { contract, ...rest } = props;
   return (
     <div>
       <Header
@@ -103,20 +104,18 @@ export default function LandingPage(props) {
                 </Info>
               </GridItem>
               <GridItem xs={12} sm={8} md={6} style={{display:"flex", justifyContent:"center"}}>
+                <Link to="/login">
+                  <Button
+                    color="primary"
+                    size="lg"
+                    round
+                  >
+                    Delivery Man
+                  </Button>
+                </Link>
                 <Button
                   color="primary"
                   size="lg"
-                  href="http://localhost:3000/login"
-                  // target="_blank"
-                  round
-                >
-                  Delivery Man
-                </Button>
-                <Button
-                  color="primary"
-                  size="lg"
-                  href="https://www.creative-tim.com/product/material-kit?ref=mkr-download-section"
-                  // target="_blank"
                   round
                 >
                   Customer

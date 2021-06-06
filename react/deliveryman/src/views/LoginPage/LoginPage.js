@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
+import {Link} from "react-router-dom";
 import faker from "faker";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,9 +28,6 @@ import styles from "assets/jss/material-kit-react/views/loginPage.js";
 
 import image from "assets/img/bg7.jpg";
 
-// Connect to contract using web3
-import getWeb3 from "utils/getWeb3";
-import COVIDContract from "build/contracts/COVID.json"
 
 const useStyles = makeStyles(styles);
 
@@ -37,11 +35,6 @@ export default function LoginPage(props) {
   const [cardAnimaton, setCardAnimation] = useState("cardHidden");
   const radionref = useRef(null);
 
-  // Web3
-  const [web3, setWeb3] = useState(null);
-  const [account, setAccount] = useState(null);
-  const [networkId, setNetworkId] = useState(null);
-  const [contract, setContract] = useState(null);
 
   //Form value
   const [firstName, setFirstName] = useState("")
@@ -53,49 +46,12 @@ export default function LoginPage(props) {
   const [three, setThree] = useState(null)
   const [four, setFour] = useState(null)
 
-  // useEffect(() =>{
-  //   console.log(radionref.current)
-  // });
-
-  // Setup web3.js
-  useEffect(() => {
-    const getweb3 = async () => {
-       const web3result = await getWeb3();
-       setWeb3(web3result);
-    }
-    getweb3();    
-  }, []);
-
-  useEffect(() => {
-    const getaccount = async () => {
-      if(web3 !== null){
-        const accountresult = await web3.eth.getAccounts();
-        setAccount(accountresult);
-        const networkidresult = await web3.eth.net.getId();
-        setNetworkId(networkidresult);
-      }    
-    }
-    getaccount();
-  }, [web3]);
-
-  useEffect(() => {
-    if(networkId !== null){
-      const deployedNetwork = COVIDContract.networks[networkId];
-      // console.log(deployedNetwork.address);
-
-      const instance = new web3.eth.Contract(
-        COVIDContract.abi,
-        deployedNetwork && deployedNetwork.address,
-      );
-      setContract(instance);
-    }
-  }, [networkId]);
 
   setTimeout(function () {
     setCardAnimation("");
   }, 700);
   const classes = useStyles();
-  const { ...rest } = props;
+  const { contract, ...rest } = props;
   return (
     <div>
       <Header
@@ -232,14 +188,18 @@ export default function LoginPage(props) {
                     
                   </CardBody>
                   <CardFooter className={classes.cardFooter}>
-                    <Button 
-                      simple color="primary" 
-                      size="lg"
-                      // href="http://localhost:3000/action"
-                      onClick={ () => contract.methods.UploadHealthStatus(firstName, lastName, email, phone, one, two, three, four).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'})}
-                    >
-                      Submit
-                    </Button>
+                    <Link to="/action">
+                      <Button 
+                        simple color="primary" 
+                        size="lg"
+                        // href="http://localhost:3000/action"
+                        onClick={ () =>  contract.methods.UploadHealthStatus(firstName, lastName, email, phone, one, two, three, four).send({from: '0x33aAdA6626d9C3c3Ca6196E2F919Fbb67FCa93Aa'})}
+                        // 
+                        // console.log(contract)
+                      >
+                        Submit
+                      </Button>
+                    </Link>
                   </CardFooter>
                 </form>
               </Card>
