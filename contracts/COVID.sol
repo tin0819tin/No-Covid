@@ -145,7 +145,7 @@ contract COVID {
     }
 
     // Get the address of matched customer
-    function GetMatchedCutomer() public view returns (bool, address) {
+    function GetMatchedCustomer() public view returns (bool, address) {
         Deliver memory DP = _DeliverStatus[msg.sender];
         return (DP.matched, DP.customer);
     }
@@ -260,7 +260,7 @@ contract COVID {
         _DeliverStatus[_address].matched = true;
     }
 
-    // Upload the Order of Cutomer
+    // Upload the Order of Customer
     function UploadOrder(
         int256[6] memory _product_num,
         string memory _real_address,
