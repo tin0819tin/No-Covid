@@ -97,7 +97,7 @@ contract('COVID', (accounts) => {
     // Match with the first Deliver
     const Deliver = Delivers[0];
     await COVIDInstance.MatchWithDeliver(Deliver, { from: accounts[6] });
-    const match_custom = await COVIDInstance.GetMatchedCutomer({ from: Deliver });
+    const match_custom = await COVIDInstance.GetMatchedCustomer({ from: Deliver });
     assert.equal(match_custom[0], true, "MatchWithDeliver:Fail to Match the customer!");
 
     // Upload the order
@@ -130,7 +130,7 @@ contract('COVID', (accounts) => {
     // Finish the match
     await COVIDInstance.FinishMatch(customer, { from: Deliver });
     arrive = await COVIDInstance.OrderArrive.call({ from: customer });
-    var status = await COVIDInstance.GetMatchedCutomer({ from: Deliver });
+    var status = await COVIDInstance.GetMatchedCustomer({ from: Deliver });
     assert.equal(status[0], false, "FinishMatch: The Match did not end succeessfully!");
     assert.equal(arrive, true, "OrderArrive: The Match did not arrive succeessfully!");
   });
