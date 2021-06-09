@@ -31,15 +31,31 @@ export default function ConfirmDeliveryPage(props) {
     classes.imgFluid
   );
   const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
-  const [FirstName, setNum_chocolate_cake] = useState("Wesly");
-  const [LastName, setNum_cupcake] = useState("Hsieh");
-  const [Email, setNum_ice_cream] = useState("covid@gmail.com");
-  const [Phone, setNum_donut] = useState("0912345678");
-  const [TravelOrNot, setNum_macaron] = useState("None");
-  const [otherSymptom, setNum_milkshake] = useState("None");
-  const [Contact, setCosts] = useState("None");
-  const [Symptom, setVisible] = useState("None");
+  const [FirstName, setFirstName] = useState("Wesly");
+  const [LastName, setLastName] = useState("Hsieh");
+  const [Email, setEmail] = useState("covid@gmail.com");
+  const [Phone, setPhone] = useState("0912345678");
+  const [TravelOrNot, setTravelOrNot] = useState("None");
+  const [otherSymptom, setotherSymptom] = useState("None");
+  const [Contact, setContact] = useState("None");
+  const [Symptom, setSymptom] = useState("None");
   const [Score, setScore] = useState(0);
+
+
+  const getDeliverDetail = () => {
+    if(customerAddr !== ""){
+        const result1 = contract.methods.GetOrderByAddress(customerAddr).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
+        const result2 = contract.methods.GetProduct().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
+        
+        console.log(result1, result2);
+
+        setOrderResult(result1[0].map( num =>  num.toNumber() ));
+        setRealAddress(result[1]);
+        setPhone(result1[2]);
+        setTotal(result1[3]);
+        setOrderName(result2[0].map(name => name.toString() ));
+    }
+};
 
   const setUpMatch = () => {
     contract.methods.MatchWithDeliver('0x03787c28627DFE33BbC357029Ef9e28C9039e62A').send({from: "0x33aAdA6626d9C3c3Ca6196E2F919Fbb67FCa93Aa"});
@@ -101,6 +117,9 @@ export default function ConfirmDeliveryPage(props) {
             size="sm" 
             color="success"
             href="http://localhost:3000/clientAction"
+            onClick ={()=> {
+              setUpMatch();
+            }}
             > Confirm my order </Button>
             &nbsp; 
             <Button size="sm" color="rose"> Change another delivery man </Button>

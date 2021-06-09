@@ -68,6 +68,11 @@ export default function OrderPage(props) {
     onClose();
   };
 
+  const setUpOrder = (num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs) => {
+    contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut,  num_macaron, num_milkshake], address, phone, costs).send({from: "0x33aAdA6626d9C3c3Ca6196E2F919Fbb67FCa93Aa"});
+    console.log([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake], address, phone, costs)
+}
+
   return (
     <>
     <div>
@@ -145,7 +150,7 @@ export default function OrderPage(props) {
             href="http://localhost:3000/confirmDelivery"
             onClick={() =>
             {
-              contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_cupcake, num_donut, num_macaron, num_milkshake], address, phone).send({from: '0x56F442A2F5E251a9cb8B78745E9a41E8970B9d3f'});
+              setUpOrder(num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs);
               resetOrder;
               }} disabled={!costs}> send my order </Button>
             <Button size="sm" color="rose" onClick={resetOrder}>reset</Button>
