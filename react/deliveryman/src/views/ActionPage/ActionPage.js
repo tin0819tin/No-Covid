@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
 import faker from "faker";
+import loader from 'api/map'
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -9,8 +10,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import Avatar from '@material-ui/core/Avatar';
 import Divider from '@material-ui/core/Divider';
+import Collapse from '@material-ui/core/Collapse';
 // @material-ui/icons
 import Person from "@material-ui/icons/Person";
 import Home from "@material-ui/icons/Home";
@@ -33,6 +37,7 @@ import CustomRadio from "components/Radio/Radio";
 
 import mapimage from "../../assets/img/map.jpg";
 import styles from "assets/jss/material-kit-react/views/actionPage.js";
+import { Keyboard } from "@material-ui/icons";
 
 const useStyles = makeStyles(styles);
 
@@ -50,72 +55,93 @@ export default function ActionPage(props) {
     const [phone, setPhone] = useState("");
     const [total, setTotal] = useState(0);
 
+
+    // customer side function
     const setUpMatch = () => {
-        contract.methods.MatchWithDeliver('0x03787c28627DFE33BbC357029Ef9e28C9039e62A').send({from: "0x33aAdA6626d9C3c3Ca6196E2F919Fbb67FCa93Aa"});
+        contract.methods.MatchWithDeliver('0xe4992dA2F485B5231961e5b687772534BE9b2b6D').send({from: "0x3615Dd3F8CCa318AF60d34601C13201D34a2BB9a"});
     }
 
     const setUpOrder = () => {
-        contract.methods.UploadOrder([1, 2, 3, 0, 1, 2], "I live in Taipei", "0912345678", 120).send({from: "0x33aAdA6626d9C3c3Ca6196E2F919Fbb67FCa93Aa"});
+        contract.methods.UploadOrder([1, 2, 3, 0, 1, 2], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0912345678", 120).send({from: "0x3615Dd3F8CCa318AF60d34601C13201D34a2BB9a"});
     }
 
-    const getCustomAddr = () => {
-        const result = contract.methods.GetMatchedCutomer().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'})
-        // contract.methods.GetMatchedCutomer().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'})
-        // .on('receipt', function(receipt){
-        //     console.log(receipt);
-        // });
-        console.log(result);
-        // if(result[0] === true){
-        //     setCustomerAddr(result[1]);
-        //     console.log(result[1]);
-        // }
+    useEffect(() => {
+        getCustomAddr();
+        // loadmap();
+    });
+
+    const loadmap = async() => {
+        loader.load().then(() => {
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 25.0139736, lng: 121.5349967 },
+                zoom: 18,
+            });
+        });
     };
 
-    const getDeliverDetail = () => {
-        if(customerAddr !== ""){
-            const result1 = contract.methods.GetOrderByAddress(customerAddr).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
-            const result2 = contract.methods.GetProduct().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
-            
-            console.log(result1, result2);
+    const getCustomAddr = async() => {
+        if (contract !== null){
+            const result = await contract.methods.GetMatchedCustomer().call({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'});
+        
+            console.log(result);
+            if(result[0] === true){
+                setCustomerAddr(result[1]);
+                console.log(result[1]);
+            }
+        }
+        
+    };
 
-            setOrderResult(result1[0].map( num =>  num.toNumber() ));
-            setRealAddress(result[1]);
+    const getDeliverDetail = async() => {
+        if(customerAddr !== ""){
+            const result1 = await contract.methods.GetOrderByAddress(customerAddr).call({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'});
+            const result2 = await contract.methods.GetProduct().call({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'});
+            
+            // console.log(result1, result2);
+
+            setOrderResult(result1[0].map( num =>  parseInt(num, 10) ));
+            setRealAddress(result1[1]);
             setPhone(result1[2]);
             setTotal(result1[3]);
-            setOrderName(result2[0].map(name => name.toString() ));
+            setOrderName(Object.values(result2));
+
+            console.log(orderResult);
+            console.log(orderName);
+            console.log(realAddress, phone, total);
         }
     };
 
-    const handleClose = (param) => {
-        setAnchorEl(null);
-        if (props && props.onClick) {
-          props.onClick(param);
-        }
-      };
+    // map instance
+    
+
 
     setTimeout(function () {
         setCardAnimation("");
     }, 700);
     
-    const orderlist = []
-    const listOrder = orderlist.map((order) => {
-        return (
-            <div>
-                <ListItem>
-                    My order
-                </ListItem>
-                <ListItemText primary={order} />
-            </div>
-        );
+
+    const listOrder = orderName.map((order, key) => {
+        if (orderResult[key] > 0){
+            return ( 
+                <ListItem key={key}>
+                    <ListItemAvatar>
+                    <Avatar>
+                        {orderResult[key]}
+                    </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={order} />
+                </ListItem>              
+            );
+        }
     });
 
     return(
         <div>
             <Header
-            absolute
-            color= {anchorElBottom? "transparent" : "white"}
-            brand="Start delivery"
-            rightLinks={<MyHeaderLinks />}
+                absolute
+                color= {anchorElBottom? "transparent" : "white"}
+                brand="Start delivery"
+                rightLinks={<MyHeaderLinks />}
             {...rest}
             />
             <div
@@ -126,18 +152,26 @@ export default function ActionPage(props) {
                 backgroundPosition: "top center",
                 }}
             >
+            {/* <div id="map" style={{height:"100%", width:"100%"}}></div> */}
                 <div className={classes.container}>
                     <GridContainer>
                         <GridItem xs={12} sm={8} md={4}>
                         {/* <Button 
                             onClick={event => setUpMatch()}
-                            color="info" 
+                            color="primary" 
                             size="lg"
                             >
                             Match
-                        </Button>   */}
+                        </Button>  
                         <Button 
-                            onClick={event => {setAnchorElBottom(event.currentTarget); getCustomAddr();}}
+                            onClick={event => setUpOrder()}
+                            color="primary" 
+                            size="lg"
+                            >
+                            Order
+                        </Button>  */}
+                        <Button 
+                            onClick={event => {setAnchorElBottom(event.currentTarget); getDeliverDetail();}}
                             color="info" 
                             size="lg"
                             >
@@ -165,9 +199,11 @@ export default function ActionPage(props) {
                             </div> */}
                             {/* <Card className={classes[cardAnimaton]} > */}
                                 <CardBody className={classes.popoverHeader}>
+                                    <ListSubheader>
                                     <h3>
                                         Delivery details
                                     </h3>
+                                    </ListSubheader>
                                     <List className={classes.list}>
                                         <ListItem divider>
                                             <ListItemAvatar>
@@ -183,7 +219,7 @@ export default function ActionPage(props) {
                                                 <Home />
                                             </Avatar>
                                             </ListItemAvatar>
-                                            <ListItemText primary="address" secondary="No. 1, Sec. 4, Roosevelt Rd., Taipei" />
+                                            <ListItemText primary="address" secondary={realAddress} />
                                         </ListItem>
                                         <ListItem divider>
                                             <ListItemAvatar>
@@ -191,22 +227,25 @@ export default function ActionPage(props) {
                                                 <Phone />
                                             </Avatar>
                                             </ListItemAvatar>
-                                            <ListItemText primary="phone" secondary="0987654321" />
+                                            <ListItemText primary="phone" secondary={phone} />
                                         </ListItem>
                                     </List>
                                 </CardBody>
                                 <CardBody className={classes.popoverHeader}>
+                                    <ListSubheader>
                                     <h3>
                                         Order summary
                                     </h3>
+                                    </ListSubheader>
                                     <List className={classes.list}>
-                                        <ListItem>
+                                        {/* <ListItem>
                                             <ListItemAvatar>
                                             <Avatar>
+                                                {orderResult[0]}
                                                 <Fastfood />
                                             </Avatar>
                                             </ListItemAvatar>
-                                            <ListItemText primary="Smoothie" />
+                                            <ListItemText primary={orderName[0]} />
                                         </ListItem>
                                         <ListItem>
                                             <ListItemAvatar>
@@ -215,6 +254,18 @@ export default function ActionPage(props) {
                                             </Avatar>
                                             </ListItemAvatar>
                                             <ListItemText primary="Smoothie" />
+                                        </ListItem> */}
+                                        {anchorElBottom? listOrder: null}
+                                        {/* <Divider/> */}
+                                        <ListItem>
+                                            Total
+                                            {/* <ListItemAvatar>
+                                            <Avatar>
+                                                <Fastfood />
+                                            </Avatar>
+                                            </ListItemAvatar> */}
+                                            {/* <ListItemText primary="Total" /> */}
+                                            <ListItemSecondaryAction>{total}TWD</ListItemSecondaryAction>
                                         </ListItem>
                                     </List>
                                 </CardBody>
@@ -234,6 +285,7 @@ export default function ActionPage(props) {
                         </GridItem>
                     </GridContainer>
                 </div>
+            
             </div>
 
             
