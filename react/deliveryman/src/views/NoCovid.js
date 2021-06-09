@@ -13,8 +13,11 @@ import COVIDContract from "build/contracts/COVID.json"
 import Components from "views/Components/Components.js";
 import LandingPage from "views/LandingPage/LandingPage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
-import ActionPage from "views/ActionPage/ActionPage"
-import ArrivePage from "views/ArrivePage/ArrivePage"
+import ActionPage from "views/ActionPage/ActionPage";
+import ArrivePage from "views/ArrivePage/ArrivePage";
+import OrderPage from "views/OrderPage/OrderPage";
+import ConfirmDeliveryPage from "views/ConfirmDeliveryPage/ConfirmDeliveryPage";
+import ClientActionPage from "views/ClientActionPage/ClientActionPage";
 
 var hist = createBrowserHistory();
 
@@ -37,9 +40,9 @@ const NoCovid = () => {
     useEffect(() => {
         const getaccount = async () => {
         if(web3 !== null){
-            const accountresult = await web3.eth.getAccounts();
+            const accountresult = await web3.eth.getAccounts(); // 取得帳號列表
             setAccount(accountresult);
-            const networkidresult = await web3.eth.net.getId();
+            const networkidresult = await web3.eth.net.getId(); // 去得乙太網路編號
             setNetworkId(networkidresult);
         }    
         }
@@ -73,7 +76,10 @@ const NoCovid = () => {
                     <Route path="/landing" render={(props) => <LandingPage {...props} contract={contract} />}  />
                     <Route path="/login" render={(props) => <LoginPage {...props} contract={contract} />} />
                     <Route path="/action" render={(props) => <ActionPage {...props} contract={contract} />}  />    
-                    <Route path="/arrive" render={(props) => <ArrivePage {...props} contract={contract} />}  />  
+                    <Route path="/arrive" render={(props) => <ArrivePage {...props} contract={contract} />}  /> 
+                    <Route path="/order" render={(props) => <OrderPage {...props} contract={contract} />}  /> 
+                    <Route path="/confirmDelivery" render={(props) => <ConfirmDeliveryPage {...props} contract={contract} />}  /> 
+                    <Route path="/clientAction" render={(props) => <ClientActionPage {...props} contract={contract} />}  />  
                     <Route path="/" component={Components} />
                 </Switch>
             </Router>

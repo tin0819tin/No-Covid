@@ -64,7 +64,7 @@ export default function ArrivePage(props) {
             </div>
             
             
-            
+           
 
             {/* <ImageUploading
                 multiple

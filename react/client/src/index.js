@@ -8,7 +8,7 @@ import "assets/scss/material-kit-react.scss?v=1.10.0";
 // pages for this product
 import Components from "views/Components/Components.js";
 import LandingPage from "views/LandingPage/LandingPage.js";
-import ProfilePage from "views/ProfilePage/ProfilePage.js";
+import ConfirmDeliveryPage from "views/ConfirmDeliveryPage/ConfirmDeliveryPage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
 import OrderPage from "views/OrderPage/OrderPage.js";
 
@@ -18,7 +18,7 @@ ReactDOM.render(
   <Router history={hist}>
     <Switch>
       <Route path="/landing-page" component={LandingPage} />
-      <Route path="/profile-page" component={ProfilePage} />
+      <Route path="/confirm_delivery-page" component={ConfirmDeliveryPage} />
       <Route path="/login-page" component={LoginPage} />
       <Route path="/order-page" component={OrderPage} />
       <Route path="/" component={Components} />
