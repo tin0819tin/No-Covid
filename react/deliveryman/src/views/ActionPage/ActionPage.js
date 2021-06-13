@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
+import {Link} from "react-router-dom";
 import faker from "faker";
 import loader from 'api/map'
 // @material-ui/core components
@@ -43,10 +44,11 @@ const useStyles = makeStyles(styles);
 
 export default function ActionPage(props) {
     const classes = useStyles();
-    const {contract, ...rest} = props;
+    const {web3, contract, setrealAddress, ...rest} = props;
 
     const [cardAnimaton, setCardAnimation] = useState("cardHidden");
     const [anchorElBottom, setAnchorElBottom] = useState(null);
+    const [account, setAccount] = useState("");
 
     const [customerAddr, setCustomerAddr] = useState("");
     const [orderName, setOrderName] = useState([]);
@@ -58,17 +60,27 @@ export default function ActionPage(props) {
 
     // customer side function
     const setUpMatch = () => {
-        contract.methods.MatchWithDeliver('0xe4992dA2F485B5231961e5b687772534BE9b2b6D').send({from: "0x3615Dd3F8CCa318AF60d34601C13201D34a2BB9a"});
+        contract.methods.MatchWithDeliver('0xe4992dA2F485B5231961e5b687772534BE9b2b6D').send({from: account});
     }
 
     const setUpOrder = () => {
-        contract.methods.UploadOrder([1, 2, 3, 0, 1, 2], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0912345678", 120).send({from: "0x3615Dd3F8CCa318AF60d34601C13201D34a2BB9a"});
+        contract.methods.UploadOrder([1, 2, 3, 0, 1, 2], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0912345678", 120).send({from: account});
     }
 
     useEffect(() => {
+        getaccount();
         getCustomAddr();
         // loadmap();
+        
     });
+
+    const getaccount = async () => {
+        if(web3 !== null){
+            const accountresult = await web3.eth.getAccounts();
+            console.log(accountresult);
+            setAccount(accountresult[0]);
+        }    
+    }
 
     const loadmap = async() => {
         loader.load().then(() => {
@@ -81,12 +93,12 @@ export default function ActionPage(props) {
 
     const getCustomAddr = async() => {
         if (contract !== null){
-            const result = await contract.methods.GetMatchedCustomer().call({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'});
+            const result = await contract.methods.GetMatchedCustomer().call({from: account});
         
-            console.log(result);
+            // console.log(result);
             if(result[0] === true){
                 setCustomerAddr(result[1]);
-                console.log(result[1]);
+                // console.log(result[1]);
             }
         }
         
@@ -94,8 +106,8 @@ export default function ActionPage(props) {
 
     const getDeliverDetail = async() => {
         if(customerAddr !== ""){
-            const result1 = await contract.methods.GetOrderByAddress(customerAddr).call({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'});
-            const result2 = await contract.methods.GetProduct().call({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'});
+            const result1 = await contract.methods.GetOrderByAddress(customerAddr).call({from: account});
+            const result2 = await contract.methods.GetProduct().call({from: account});
             
             // console.log(result1, result2);
 
@@ -105,9 +117,9 @@ export default function ActionPage(props) {
             setTotal(result1[3]);
             setOrderName(Object.values(result2));
 
-            console.log(orderResult);
-            console.log(orderName);
-            console.log(realAddress, phone, total);
+            // console.log(orderResult);
+            // console.log(orderName);
+            // console.log(realAddress, phone, total);
         }
     };
 
@@ -270,14 +282,16 @@ export default function ActionPage(props) {
                                     </List>
                                 </CardBody>
                                 <CardFooter className={classes.cardFooter}>
-                                    <Button 
-                                    color="success" 
-                                    size="lg"
-                                    href="http://localhost:3000/arrive"
-                                    onClick={() => console.log("Deliver!!")}
-                                    >
-                                    Delivered!
-                                    </Button>
+                                    <Link to="/arrive">
+                                        <Button 
+                                        color="success" 
+                                        size="lg"
+                                        href="http://localhost:3000/arrive"
+                                        onClick={() => {console.log(realAddress); setrealAddress(realAddress);}}
+                                        >
+                                        Delivered!
+                                        </Button>
+                                    </Link>
                                 </CardFooter>
                             {/* </Card> */}
                         </Popover>

@@ -1,12 +1,14 @@
 import faker from "faker";
-import React from "react";
+import React, {useState, useEffect} from "react";
+import {Link} from "react-router-dom";
 // nodejs library that concatenates classes
 import classNames from "classnames";
 import ImageUploading from 'react-images-uploading';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 
-
+// Google Map Geolocation
+import {geolocation} from 'api/geolocation';
 
 // @material-ui/icons
 
@@ -28,13 +30,25 @@ import styles from "assets/jss/material-kit-react/views/landingPage.js";
 import SectionCarousel from "views/Components/Sections/SectionCarousel"
 
 const dashboardRoutes = [];
+const gridstyles = {
+    grid: {
+      position: "relative",
+      width: "100%",
+      minHeight: "1px",
+      paddingRight: "0px",
+      paddingLeft: "0px",
+      flexBasis: "auto",
+    },
+  };
 
 const useStyles = makeStyles(styles);
+const useStyles2 = makeStyles(gridstyles);
 
 
 export default function ArrivePage(props) {
 
-    const [images, setImages] = React.useState([]);
+    const [images, setImages] = useState([]);
+    const [account, setAccount] = useState("");
     const maxNumber = 69;
     
     const onChange = (imageList, addUpdateIndex) => {
@@ -43,8 +57,17 @@ export default function ArrivePage(props) {
         setImages(imageList);
     };
 
+    const getaccount = async () => {
+        if(web3 !== null){
+            const accountresult = await web3.eth.getAccounts();
+            console.log(accountresult);
+            setAccount(accountresult[0]);
+        }    
+    }
+
     const classes = useStyles();
-    const { contract, ...rest } = props;
+    const classes_2 = useStyles2();
+    const {web3, contract, realAdress, ...rest} = props;
     return (
         <div>
             <Header
@@ -62,6 +85,19 @@ export default function ArrivePage(props) {
             <div className={classes.section}>
                 <FileUpload />
             </div>
+            <GridContainer justify="center">
+                <GridItem xs={12} sm={12} md={1} className={classes_2.grid}>
+                    <Button 
+                        onClick={() => { console.log(realAdress); geolocation(realAdress);}}
+                        color="success" 
+                        size="lg"
+                        >
+                        Done
+                    </Button>
+                    <script></script>
+                </GridItem>
+            </GridContainer>
+            
             
             
            
