@@ -28,6 +28,9 @@ const NoCovid = () => {
     const [networkId, setNetworkId] = useState(null);
     const [contract, setContract] = useState(null);
 
+    // Customer Property
+    const [realAdress, setRealAddress] = useState("");
+
      // Setup web3.js
     useEffect(() => {
         const getweb3 = async () => {
@@ -75,8 +78,8 @@ const NoCovid = () => {
                 <Switch>
                     <Route path="/landing" render={(props) => <LandingPage {...props} contract={contract} />}  />
                     <Route path="/login" render={(props) => <LoginPage {...props} contract={contract} />} />
-                    <Route path="/action" render={(props) => <ActionPage {...props} contract={contract} />}  />    
-                    <Route path="/arrive" render={(props) => <ArrivePage {...props} contract={contract} />}  /> 
+                    <Route path="/action" render={(props) => <ActionPage {...props} web3={web3} contract={contract} setrealAddress={realAdress => setRealAddress(realAdress)}/>}  />    
+                    <Route path="/arrive" render={(props) => <ArrivePage {...props} web3={web3} contract={contract}  realAdress={realAdress}/>}  /> 
                     <Route path="/order" render={(props) => <OrderPage {...props} contract={contract} />}  /> 
                     <Route path="/confirmDelivery" render={(props) => <ConfirmDeliveryPage {...props} contract={contract} />}  /> 
                     <Route path="/clientAction" render={(props) => <ClientActionPage {...props} contract={contract} />}  />  

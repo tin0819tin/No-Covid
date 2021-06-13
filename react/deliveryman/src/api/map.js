@@ -1,11 +1,11 @@
 import axios from 'axios'
 import { Loader } from "@googlemaps/js-api-loader"
 
+require('dotenv').config({path: '/src'});
 
 const loader = new Loader({
-    apiKey: "AIzaSyCWz2zqy-WkQ24m1kAAz-rp_viKj4BEv3g",
+    apiKey: process.env.REACT_APP_API_KEY_1,
     version: "weekly"
-
 });
 
 export default loader;
