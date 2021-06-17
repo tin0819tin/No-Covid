@@ -1,4 +1,6 @@
 pragma solidity ^0.5.0;
+pragma experimental ABIEncoderV2; // ABI Encoder
+import "./queue.sol";
 
 /*
 Contract Description:
@@ -28,9 +30,15 @@ Contract Description:
     @ Product name in tuple: (Product1, Product2, ...., Product6)
 
 6. FinishMatch(address customer): Finish the match with the customer and inform the customer to take his order(send photos and location)
+
+7. UploadDeliveryHistory(string memory _newdest): 
+    Upload the latest destination of delivery man (The parameter is the real address)
+    
 *********** Client Side ***********
 1. GetHealthStatus(address DP): get the health status of DP
     @Return: (_FirstName, _LastName, _Email, _Phone, _TravelOrNot, _otherSymptom, _Contact, _Symptom)
+1.5 GetDeliverHistory(address Deliv): Get the latest 50 delivery history of this deliver
+    @Return: string[] Ex:["Taipei101", "NTU", ..., "KFC"]
 
 2. GetAllDeliver(): get the addresses of all available delivery people
     @Return: [] Array containing the addresses of all delivery people
@@ -48,17 +56,11 @@ Contract Description:
     @ Return: bool  => denotes whether the order has arrived
 */
 
-contract COVID {
+contract COVID is queue {
     /**********
      * Struct Definition (mapping)
      ************
      */
-    // Delivering history
-    struct History {
-        mapping(int256 => bool) has_visited_x; // whether this coordinate(x,y) has been visited
-        mapping(int256 => bool) has_visited_y; // whether this coordinate(x,y) has been visited
-        int256[2][] log; // all the history will be stored in the log
-    }
 
     // Delivery Person
     struct Deliver {
@@ -74,7 +76,7 @@ contract COVID {
         uint256 id; // the id to help us find this guy in the array
         address customer; // the address of the matched customer
         bool matched; // whether this deliver is matched
-        History history; // all the locations where this deliver has been before
+        Queue delivery_history; // all the locations where this deliver has been before
     }
     // Customer
     struct Customer {
@@ -93,6 +95,19 @@ contract COVID {
         uint256 tipAmount;
         address payable author;
     }
+    /***********
+     * Event definition
+     ******************
+     */
+    event UploadHistory(string[] allhistory, string newhistory);
+    event ImageCreated(
+        uint256 id,
+        string hash,
+        string description,
+        uint256 tipAmount,
+        address payable author
+    );
+    event UpdateHealth(address DP);
     /**********
      * Private data structures (mapping)
      ************
@@ -113,13 +128,6 @@ contract COVID {
      * Image Operations
      ******************
      */
-    event ImageCreated(
-        uint256 id,
-        string hash,
-        string description,
-        uint256 tipAmount,
-        address payable author
-    );
 
     function uploadImage(string memory _imgHash, string memory _description)
         public
@@ -151,7 +159,6 @@ contract COVID {
      ***************
      */
     // Upload the health status
-    event UpdateHealth(address DP);
 
     function UploadHealthStatus(
         string memory _FirstName,
@@ -255,6 +262,24 @@ contract COVID {
         );
     }
 
+    function UploadDeliveryHistory(string memory _newdest) public {
+        // Make sure this deliver exist
+        require(
+            _DeliverStatus[msg.sender].exist == true,
+            "UploadDeliveryHistory: The deliver does not exist!"
+        );
+        require(
+            bytes(_newdest).length > 0,
+            "UploadDeliveryHistory: The latest delivery history should not be empty string!"
+        );
+
+        push(_DeliverStatus[msg.sender].delivery_history, _newdest);
+        emit UploadHistory(
+            datas(_DeliverStatus[msg.sender].delivery_history),
+            _newdest
+        );
+    }
+
     /**************
      * Client Side *
      ***************
@@ -294,6 +319,18 @@ contract COVID {
             deliver.Contact,
             deliver.Symptom
         );
+    }
+
+    function GetDeliverHistory(address Deliv)
+        public
+        view
+        returns (string[] memory)
+    {
+        require(
+            _DeliverStatus[Deliv].exist == true,
+            "GetDeliverHistory: The deliver does not exist!"
+        );
+        return datas(_DeliverStatus[Deliv].delivery_history);
     }
 
     // Get the addresses of all delivery people
