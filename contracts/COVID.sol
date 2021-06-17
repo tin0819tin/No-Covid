@@ -41,6 +41,7 @@ Contract Description:
         int256[] _product_num,
         string memory _real_address,
         string memory _phone,
+        string memory _restaurant_addr,
         int256 memory _total
     ): Upload the order and some information of customer
 5. OrderArrive(): 
@@ -82,6 +83,15 @@ contract COVID {
         string phone;
         bool arrived; // whether the order has arrived
         int256 total; // total cost of the order
+        string restaurant_address;
+    }
+
+    struct Image {
+        uint256 id;
+        string hash;
+        string description;
+        uint256 tipAmount;
+        address payable author;
     }
     /**********
      * Private data structures (mapping)
@@ -94,6 +104,47 @@ contract COVID {
 
     // Record the Order of a customer
     mapping(address => Customer) private _CustomerOrder;
+
+    // Image
+    uint256 public imageCount = 0;
+    mapping(uint256 => Image) public images;
+
+    /***************
+     * Image Operations
+     ******************
+     */
+    event ImageCreated(
+        uint256 id,
+        string hash,
+        string description,
+        uint256 tipAmount,
+        address payable author
+    );
+
+    function uploadImage(string memory _imgHash, string memory _description)
+        public
+    {
+        // Make sure the image hash exists
+        require(bytes(_imgHash).length > 0);
+        // Make sure image description exists
+        require(bytes(_description).length > 0);
+        // Make sure uploader address exists
+        require(msg.sender != address(0));
+
+        // Increment image id
+        imageCount++;
+
+        // Add Image to the contract
+        images[imageCount] = Image(
+            imageCount,
+            _imgHash,
+            _description,
+            0,
+            msg.sender
+        );
+        // Trigger an event
+        emit ImageCreated(imageCount, _imgHash, _description, 0, msg.sender);
+    }
 
     /*************
      * Delivery Side
@@ -127,6 +178,7 @@ contract COVID {
         _DeliverStatus[msg.sender].Symptom = _Symptom;
         _DeliverStatus[msg.sender].exist = true;
         // Success
+        // Use Event to show the uploaded data in logs
         emit UpdateHealth(msg.sender);
         return true;
     }
@@ -157,6 +209,7 @@ contract COVID {
             int256[6] memory,
             string memory,
             string memory,
+            string memory,
             int256
         )
     {
@@ -165,6 +218,7 @@ contract COVID {
             customer.Product_num,
             customer.real_address,
             customer.phone,
+            customer.restaurant_address,
             customer.total
         );
     }
@@ -265,6 +319,7 @@ contract COVID {
         int256[6] memory _product_num,
         string memory _real_address,
         string memory _phone,
+        string memory _restaurant_address,
         int256 _total
     ) public {
         Customer storage customer = _CustomerOrder[msg.sender];
@@ -272,6 +327,7 @@ contract COVID {
         customer.Product_num = _product_num;
         customer.real_address = _real_address;
         customer.phone = _phone;
+        customer.restaurant_address = _restaurant_address;
         customer.arrived = false;
         customer.total = _total;
     }
