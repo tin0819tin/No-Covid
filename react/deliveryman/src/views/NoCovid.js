@@ -77,12 +77,12 @@ const NoCovid = () => {
             <Router history={hist}>
                 <Switch>
                     <Route path="/landing" render={(props) => <LandingPage {...props} contract={contract} />}  />
-                    <Route path="/login" render={(props) => <LoginPage {...props} contract={contract} />} />
+                    <Route path="/login" render={(props) => <LoginPage {...props} web3={web3} contract={contract} />} />
                     <Route path="/action" render={(props) => <ActionPage {...props} web3={web3} contract={contract} setrealAddress={realAdress => setRealAddress(realAdress)}/>}  />    
                     <Route path="/arrive" render={(props) => <ArrivePage {...props} web3={web3} contract={contract}  realAdress={realAdress}/>}  /> 
-                    <Route path="/order" render={(props) => <OrderPage {...props} contract={contract} />}  /> 
-                    <Route path="/confirmDelivery" render={(props) => <ConfirmDeliveryPage {...props} contract={contract} />}  /> 
-                    <Route path="/clientAction" render={(props) => <ClientActionPage {...props} contract={contract} />}  />  
+                    <Route path="/order" render={(props) => <OrderPage {...props} web3={web3} contract={contract} />}  /> 
+                    <Route path="/confirmDelivery" render={(props) => <ConfirmDeliveryPage {...props} web3={web3} contract={contract} />}  /> 
+                    <Route path="/clientAction" render={(props) => <ClientActionPage {...props} web3={web3} contract={contract} />}  />  
                     <Route path="/" component={Components} />
                 </Switch>
             </Router>

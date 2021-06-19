@@ -50,12 +50,21 @@ export default function ArrivePage(props) {
     const [images, setImages] = useState([]);
     const [account, setAccount] = useState("");
     const maxNumber = 69;
+    const [confirm, setConfirm] = useState(null);
     
-    const onChange = (imageList, addUpdateIndex) => {
-        // data for submit
-        console.log(imageList, addUpdateIndex);
-        setImages(imageList);
-    };
+    // const onChange = (imageList, addUpdateIndex) => {
+    //     // data for submit
+    //     console.log(imageList, addUpdateIndex);
+    //     setImages(imageList);
+    // };
+
+    useEffect(() => {
+        getaccount();
+        if (confirm === null ){
+            comfirmGeolocation();
+        }
+        console.log(confirm);
+    });
 
     const getaccount = async () => {
         if(web3 !== null){
@@ -63,6 +72,16 @@ export default function ArrivePage(props) {
             console.log(accountresult);
             setAccount(accountresult[0]);
         }    
+    }
+
+    const comfirmGeolocation = async() => {
+        geolocation(realAdress, setConfirm);
+    }
+
+    const uploadDeliveryHistory = async() => {
+        if(confirm === true){
+            const result = await contract.methods.UploadDeliveryHistory(realAdress).send({from: account});
+        }
     }
 
     const classes = useStyles();
@@ -88,7 +107,7 @@ export default function ArrivePage(props) {
             <GridContainer justify="center">
                 <GridItem xs={12} sm={12} md={1} className={classes_2.grid}>
                     <Button 
-                        onClick={() => { console.log(realAdress); geolocation(realAdress);}}
+                        onClick={() => { console.log(realAdress); uploadDeliveryHistory();}}
                         color="success" 
                         size="lg"
                         >
@@ -96,6 +115,7 @@ export default function ArrivePage(props) {
                     </Button>
                     <script></script>
                 </GridItem>
+                
             </GridContainer>
             
             

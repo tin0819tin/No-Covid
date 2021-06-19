@@ -55,6 +55,7 @@ export default function ActionPage(props) {
     const [orderResult, setOrderResult] = useState([]);
     const [realAddress, setRealAddress] = useState("");
     const [phone, setPhone] = useState("");
+    const [restaurant, setRestaurant] = useState("")
     const [total, setTotal] = useState(0);
 
 
@@ -64,7 +65,7 @@ export default function ActionPage(props) {
     }
 
     const setUpOrder = () => {
-        contract.methods.UploadOrder([1, 2, 3, 0, 1, 2], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0912345678", 120).send({from: account});
+        contract.methods.UploadOrder([1, 2, 3, 0, 4, 3], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0975666777", "No. 169, Section 2, Xinhai Road, Daan District, Taipei City", 666).send({from: account});
     }
 
     useEffect(() => {
@@ -77,7 +78,7 @@ export default function ActionPage(props) {
     const getaccount = async () => {
         if(web3 !== null){
             const accountresult = await web3.eth.getAccounts();
-            console.log(accountresult);
+            // console.log(accountresult);
             setAccount(accountresult[0]);
         }    
     }
@@ -114,7 +115,8 @@ export default function ActionPage(props) {
             setOrderResult(result1[0].map( num =>  parseInt(num, 10) ));
             setRealAddress(result1[1]);
             setPhone(result1[2]);
-            setTotal(result1[3]);
+            setRestaurant(result1[3])
+            setTotal(result1[4]);
             setOrderName(Object.values(result2));
 
             // console.log(orderResult);
@@ -168,7 +170,7 @@ export default function ActionPage(props) {
                 <div className={classes.container}>
                     <GridContainer>
                         <GridItem xs={12} sm={8} md={4}>
-                        {/* <Button 
+                        <Button 
                             onClick={event => setUpMatch()}
                             color="primary" 
                             size="lg"
@@ -181,7 +183,7 @@ export default function ActionPage(props) {
                             size="lg"
                             >
                             Order
-                        </Button>  */}
+                        </Button> 
                         <Button 
                             onClick={event => {setAnchorElBottom(event.currentTarget); getDeliverDetail();}}
                             color="info" 
@@ -223,7 +225,7 @@ export default function ActionPage(props) {
                                                 <Person />
                                             </Avatar>
                                             </ListItemAvatar>
-                                            <ListItemText primary="Customer" secondary="Mr. Ting" />
+                                            <ListItemText primary="Customer" secondary={customerAddr} />
                                         </ListItem>
                                         <ListItem divider>
                                             <ListItemAvatar>
@@ -286,7 +288,7 @@ export default function ActionPage(props) {
                                         <Button 
                                         color="success" 
                                         size="lg"
-                                        href="http://localhost:3000/arrive"
+                                        // href="http://localhost:3000/arrive"
                                         onClick={() => {console.log(realAddress); setrealAddress(realAddress);}}
                                         >
                                         Delivered!

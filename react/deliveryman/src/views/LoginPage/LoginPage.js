@@ -34,6 +34,7 @@ const useStyles = makeStyles(styles);
 export default function LoginPage(props) {
   const [cardAnimaton, setCardAnimation] = useState("cardHidden");
   const radionref = useRef(null);
+  const [account, setAccount] = useState("");
 
 
   //Form value
@@ -46,12 +47,24 @@ export default function LoginPage(props) {
   const [three, setThree] = useState(null)
   const [four, setFour] = useState(null)
 
+  useEffect(() => {
+    getaccount();  
+  });
+
+const getaccount = async () => {
+    if(web3 !== null){
+        const accountresult = await web3.eth.getAccounts();
+        console.log(accountresult);
+        setAccount(accountresult[0]);
+    }    
+}
+
 
   setTimeout(function () {
     setCardAnimation("");
   }, 700);
   const classes = useStyles();
-  const { contract, ...rest } = props;
+  const { web3, contract, ...rest } = props;
   return (
     <div>
       <Header
@@ -74,8 +87,8 @@ export default function LoginPage(props) {
             <GridItem xs={12} sm={12} md={8}>
               <Card className={classes[cardAnimaton]} >
                 <form className={classes.form} >
-                  <CardHeader color="primary" className={classes.cardHeader}>
-                    <h3><strong>Register</strong></h3>
+                  <CardHeader color="info" className={classes.cardHeader}>
+                    <h3 style={{ color: 'white' }}><strong>Register</strong></h3>
                     {/* <div className={classes.socialLine}>
                     </div> */}
                   </CardHeader>
@@ -193,7 +206,7 @@ export default function LoginPage(props) {
                         simple color="primary" 
                         size="lg"
                         // href="http://localhost:3000/action"
-                        onClick={ () =>  contract.methods.UploadHealthStatus(firstName, lastName, email, phone, one, two, three, four).send({from: '0xe4992dA2F485B5231961e5b687772534BE9b2b6D'})}
+                        onClick={ () =>  contract.methods.UploadHealthStatus(firstName, lastName, email, phone, one, two, three, four).send({from: account})}
                         // 
                         // console.log(contract)
                       >
