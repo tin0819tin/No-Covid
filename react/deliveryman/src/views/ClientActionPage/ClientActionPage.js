@@ -1,4 +1,7 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useState, useEffect, useRef, Component} from "react";
+import '../view.css';
+import loader from "../../api/map";
+import {Link} from "react-router-dom";
 import faker from "faker";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
@@ -28,12 +31,17 @@ import CardFooter from "components/Card/CardFooter.js";
 import CustomInput from "components/CustomInput/CustomInput.js";
 import CustomDropdown from "components/CustomDropdown/CustomDropdown.js";
 import CustomRadio from "components/Radio/Radio";
-import {Form, Rate, Modal} from 'antd';
+import {Form, Rate, Modal, Layout, Menu } from 'antd';
+import { UploadOutlined, UserOutlined, VideoCameraOutlined } from '@ant-design/icons';
+
+const {Content, Sider} = Layout;
 
 import mapimage from "../../assets/img/map.jpg";
 import styles from "assets/jss/material-kit-react/views/actionPage.js";
 
 const useStyles = makeStyles(styles);
+
+const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
 export default function ActionPage(props) {
     const classes = useStyles();
@@ -42,13 +50,68 @@ export default function ActionPage(props) {
     const [cardAnimaton, setCardAnimation] = useState("cardHidden");
     const [anchorElBottom, setAnchorElBottom] = useState(null);
 
+    const [clientAddr, setClientAddr] = useState("0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5");
+    const [deliveryAddr, setDeliveryAddr] = useState("0x97D40c60E86De40b75Dd703cD117eb92Fbc8536c");
     const [customerAddr, setCustomerAddr] = useState("");
     const [orderName, setOrderName] = useState([]);
     const [orderResult, setOrderResult] = useState([]);
     const [realAddress, setRealAddress] = useState("");
     const [phone, setPhone] = useState("");
     const [total, setTotal] = useState(0);
+    const [rate, setRate] = useState(0);
+    const [clientLatitude, setLatitude] = useState(0);
+    const [clientLongitude, setLongitude] = useState(0);
+    const [deliveryLocation, setDeliveryLocation] = useState([]);
 
+    loader.load().then(() => {
+        const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度
+
+        const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat: latlng.lat, lng: latlng.lng },
+          zoom: 12,
+        });
+
+        var marker = new google.maps.Marker({
+            position: latlng,
+            // animation: google.maps.Animation.BOUNCE,
+            // label: 'restaurant',
+            icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            // http://maps.google.com/mapfiles/ms/icons/green-dot.png
+            // http://maps.google.com/mapfiles/ms/icons/blue-dot.png
+            // http://maps.google.com/mapfiles/ms/icons/red-dot.png
+            // http://maps.google.com/mapfiles/ms/icons/yellow-dot.png
+            map: map
+        });
+
+        var marker = new google.maps.Marker({
+            position: { lat: clientLatitude, lng: clientLongitude },
+            // animation: google.maps.Animation.BOUNCE,
+            // label: 'restaurant',
+            // icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            // http://maps.google.com/mapfiles/ms/icons/green-dot.png,
+            // http://maps.google.com/mapfiles/ms/icons/blue-dot.png,
+            // http://maps.google.com/mapfiles/ms/icons/red-dot.png,
+            icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+            map: map
+        });
+      });
+    
+    const getLocation = () => {
+        if (navigator.geolocation) {
+          console.log("get position")
+          navigator.geolocation.getCurrentPosition(setPosition);
+        } else {
+          console.log( "Geolocation is not supported by this browser")
+        }
+      }
+    
+    const setPosition = (position) => {
+        setLatitude(position.coords.latitude)
+        setLongitude(position.coords.longitude)
+        console.log("Latitude: " + clientLatitude)
+        console.log("Longitude: " + clientLongitude)
+      }
+    
     const getCustomAddr = () => {
         const result = contract.methods.GetMatchedCutomer().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'})
         console.log(result);
@@ -84,6 +147,7 @@ export default function ActionPage(props) {
     
       const handleOk = () => {
         setIsModalVisible(false);
+        history.push("http://localhost:3000/order")
       };
     
       const handleCancel = () => {
@@ -93,6 +157,10 @@ export default function ActionPage(props) {
     setTimeout(function () {
         setCardAnimation("");
     }, 700);
+
+    useEffect(() => { // 初始 render
+        getLocation();
+      }, [clientLatitude, clientLongitude]);
     
     const orderlist = []
     const listOrder = orderlist.map((order) => {
@@ -120,18 +188,21 @@ export default function ActionPage(props) {
       };
 
     return(
-        <div>
-            <Header
-            absolute
-            color= {anchorElBottom? "transparent" : "white"}
-            brand="Your meal is coming..."
-            rightLinks={<MyHeaderLinks />}
-            {...rest}
-            />
+        <Layout>
+        <Sider
+        breakpoint="lg"
+        collapsedWidth="0"
+        onBreakpoint={broken => {
+            console.log(broken);
+        }}
+        onCollapse={(collapsed, type) => {
+            console.log(collapsed, type);
+        }}
+        >
             <div
                 className={classes.pageHeader}
                 style={{
-                backgroundImage: "url(" + mapimage + ")",
+                // backgroundImage: "url(" + mapimage + ")",
                 backgroundSize: "cover",
                 backgroundPosition: "top center",
                 }}
@@ -144,11 +215,30 @@ export default function ActionPage(props) {
                                 showModal();
                             }}
                             color="info" 
-                            size="lg"
+                            size="sm"
                             >
                             Receive my meal
                         </Button>
-                        <Modal title="Rate the delivery man" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
+                        <Modal 
+                        title="Rate the delivery man" 
+                        visible={isModalVisible} 
+                        onOk={handleOk} 
+                        onCancel={handleCancel}
+                        footer={[
+                            <Link to="/order">
+                            <Button
+                            // href="http://localhost:3000/order"
+                            onClick={() => {
+                                console.log()
+                            }}
+                            color="info" 
+                            size="sm"
+                            >
+                            DONE
+                        </Button>
+                        </Link>
+                          ]}
+                        >
                             <Form
                                 name="validate_other"
                                 {...formItemLayout}
@@ -160,103 +250,36 @@ export default function ActionPage(props) {
                                 }}
                             >
                             <Form.Item name="rate" label="Rate">
-                                <Rate />
+                                <Rate                                 
+                                onChange={(value) => {
+                                    setRate(value)
+                                    console.log(value)
+                                }}/>
                             </Form.Item>
                             </Form>
-                        </Modal>
-                        <Popover
-                            classes={{
-                            paper: classes.popover
-                            }}
-                            open={Boolean(anchorElBottom)}
-                            anchorEl={anchorElBottom}
-                            onClose={() => setAnchorElBottom(null)}
-                            anchorOrigin={{
-                            vertical: "top",
-                            horizontal: "left"
-                            }}
-                            transformOrigin={{
-                            vertical: "top",
-                            horizontal: "left"
-                            }}
-                        >
-                            {/* <h3 className={classes.popoverHeader}>Popover on bottom</h3>
-                            <div className={classes.popoverBody}>
-                            Here will be some very useful information about his popover.
-                            </div> */}
-                            {/* <Card className={classes[cardAnimaton]} > */}
-                                <CardBody className={classes.popoverHeader}>
-                                    <h3>
-                                        Delivery details
-                                    </h3>
-                                    <List className={classes.list}>
-                                        <ListItem divider>
-                                            <ListItemAvatar>
-                                            <Avatar>
-                                                <Person />
-                                            </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText primary="Customer" secondary="Mr. Ting" />
-                                        </ListItem>
-                                        <ListItem divider>
-                                            <ListItemAvatar>
-                                            <Avatar>
-                                                <Home />
-                                            </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText primary="address" secondary="No. 1, Sec. 4, Roosevelt Rd., Taipei" />
-                                        </ListItem>
-                                        <ListItem divider>
-                                            <ListItemAvatar>
-                                            <Avatar>
-                                                <Phone />
-                                            </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText primary="phone" secondary="0987654321" />
-                                        </ListItem>
-                                    </List>
-                                </CardBody>
-                                <CardBody className={classes.popoverHeader}>
-                                    <h3>
-                                        Order summary
-                                    </h3>
-                                    <List className={classes.list}>
-                                        <ListItem>
-                                            <ListItemAvatar>
-                                            <Avatar>
-                                                <Fastfood />
-                                            </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText primary="Smoothie" />
-                                        </ListItem>
-                                        <ListItem>
-                                            <ListItemAvatar>
-                                            <Avatar>
-                                                <Fastfood />
-                                            </Avatar>
-                                            </ListItemAvatar>
-                                            <ListItemText primary="Smoothie" />
-                                        </ListItem>
-                                    </List>
-                                </CardBody>
-                                <CardFooter className={classes.cardFooter}>
-                                    <Button 
-                                    color="success" 
-                                    size="lg"
-                                    href="http://localhost:3000/arrive"
-                                    onClick={() => console.log("Deliver!!")}
-                                    >
-                                    Delivered!
-                                    </Button>
-                                </CardFooter>
-                            {/* </Card> */}
-                        </Popover>
-                        
+                        </Modal>                    
                         </GridItem>
                     </GridContainer>
                 </div>
             </div>
-        </div>
-
+        </Sider>
+        <Layout>
+        <br></br>
+        <br></br>
+        <br></br>
+        <Header
+            absolute
+            color= {anchorElBottom? "transparent" : "white"}
+            brand="Your meal is coming..."
+            fixed
+            rightLinks={<MyHeaderLinks />}
+            {...rest}
+            />
+        <Content style={{ margin: '24px 16px 0' }}>
+            <div id="map"></div>
+        </Content>
+        <Footer style={{ textAlign: 'center' }}></Footer>
+        </Layout>
+    </Layout>
     );
 }

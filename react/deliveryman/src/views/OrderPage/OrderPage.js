@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {Link} from "react-router-dom";
 import 'antd/dist/antd.css';
 // nodejs library that concatenates classes
 import classNames from "classnames";
@@ -48,6 +49,8 @@ export default function OrderPage(props) {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [visible, setVisible] = useState(false);
+  const clinet_test = "0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5";
+  const delivery_test = "0x97D40c60E86De40b75Dd703cD117eb92Fbc8536c";
 
   const showDrawer = () => {
     setVisible(true);
@@ -64,12 +67,15 @@ export default function OrderPage(props) {
     setNum_donut(0);
     setNum_macaron(0);
     setNum_milkshake(0);
+    setAddress("");
+    setPhone("");
     setCosts(0)
     onClose();
   };
 
   const setUpOrder = (num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs) => {
-    contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut,  num_macaron, num_milkshake], address, phone, costs).send({from: "0x33aAdA6626d9C3c3Ca6196E2F919Fbb67FCa93Aa"});
+    console.log(contract);
+    contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut,  num_macaron, num_milkshake], address, phone, costs).send({from: clinet_test});
     console.log([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake], address, phone, costs)
 }
 
@@ -144,15 +150,17 @@ export default function OrderPage(props) {
                 </>
               : <p>No item</p>
             }
-            <Button 
-            size="sm" 
-            color="success" 
-            href="http://localhost:3000/confirmDelivery"
-            onClick={() =>
-            {
-              setUpOrder(num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs);
-              resetOrder;
-              }} disabled={!costs}> send my order </Button>
+            <Link to="/confirmDelivery">
+              <Button 
+              size="sm" 
+              color="success" 
+              // href="http://localhost:3000/confirmDelivery"
+              onClick={() =>
+              {
+                setUpOrder(num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs);
+                resetOrder;
+                }} disabled={!costs}> send my order </Button>
+            </Link>  
             <Button size="sm" color="rose" onClick={resetOrder}>reset</Button>
             <Button size="sm" onClick={onClose}>cancel</Button>
             </Drawer>
