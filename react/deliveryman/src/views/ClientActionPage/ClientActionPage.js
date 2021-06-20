@@ -191,15 +191,14 @@ export default function ActionPage(props) {
         <Layout>
         <Sider
         breakpoint="lg"
-        collapsedWidth="0"
+        collapsedWidth="180"
         onBreakpoint={broken => {
             console.log(broken);
         }}
         onCollapse={(collapsed, type) => {
             console.log(collapsed, type);
         }}
-        >
-            <div
+        >   <div
                 className={classes.pageHeader}
                 style={{
                 // backgroundImage: "url(" + mapimage + ")",

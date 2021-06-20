@@ -1,6 +1,8 @@
 import {React, useState, useEffect} from "react";
 import {Link} from "react-router-dom";
 import loader from "../../api/map";
+// Google Map Geolocation
+import {geolocation} from 'api/geolocation';
 import { Descriptions } from 'antd';
 // nodejs library that concatenates classes
 import classNames from "classnames";
@@ -89,6 +91,10 @@ export default function ConfirmDeliveryPage(props) {
     console.log("Longitude: " + clientLongitude)
   }
 
+  const comfirmGeolocation = async() => {
+    geolocation(realAdress, setConfirm);
+}
+
   const getDelivery = () => {
       let deleviryIndex = 0;
       while (deleviryIndex < deliveryInfo.length) {
@@ -136,6 +142,10 @@ export default function ConfirmDeliveryPage(props) {
   useEffect(() => { // 初始 render
     getLocation();
     getaccount();
+    if (confirm === null ){
+      comfirmGeolocation();
+  }
+  console.log(confirm);
   }, [clientLatitude, clientLongitude]);
 
   useEffect(() => {

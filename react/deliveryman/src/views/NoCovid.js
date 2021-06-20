@@ -13,7 +13,8 @@ import COVIDContract from "build/contracts/COVID.json"
 import Components from "views/Components/Components.js";
 import LandingPage from "views/LandingPage/LandingPage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
-import ActionPage from "views/ActionPage/ActionPage";
+// import ActionPage from "views/ActionPage/ActionPage";
+import ActionPage from "views/ActionPage/ActionPage_copy";
 import ArrivePage from "views/ArrivePage/ArrivePage";
 import OrderPage from "views/OrderPage/OrderPage";
 import ConfirmDeliveryPage from "views/ConfirmDeliveryPage/ConfirmDeliveryPage";
