@@ -3,10 +3,14 @@ pragma experimental ABIEncoderV2; // ABI Encoder
 
 contract queue {
     uint256 constant size = 51;
+    uint256 constant size2 = 6;
     struct Queue {
-        string[size] data;
+        string[size] data; // the history
+        int256[size2] rates; // the rates
         uint256 front;
         uint256 back;
+        uint256 int_front;
+        uint256 int_back;
     }
 
     /// @dev the number of elements stored in the queue.
@@ -33,6 +37,16 @@ contract queue {
         } // throw;
         q.data[q.back] = _data;
         q.back = (q.back + 1) % size;
+    }
+
+    /// @dev push a new element to the back of the queue
+    function push(Queue storage q, int256 _rate) internal {
+        if ((q.int_back + 1) % size == q.int_front) {
+            // The queue is full, pop one element
+            q.int_front = (q.int_front + 1) % size2;
+        } // throw;
+        q.rates[q.int_back] = _rate;
+        q.int_back = (q.int_back + 1) % size2;
     }
 
     /// @dev Returns all the datas in order

@@ -39,7 +39,8 @@ uploadImage = description => {
       }
 
       // 這裡到時候就呼叫contract中上傳image的function，result[0] 就是image，description是關於這張照片的論述，沒有的話就傳空字串
-      this.state.Contract.methods.UploadImage(result[0].hash, description).send({ from: this.state.account })
+      this.state.Contract.methods.uploadImage(customer_addr, result[0].hash, description).send({ from: this.state.account })
+      this.state.Contract.methods.FinishMatch(customer_addr, result[0].hash, description).send({ from: this.state.account })
     })
 ```
 2. Customer

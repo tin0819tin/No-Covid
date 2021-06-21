@@ -33,7 +33,13 @@ Contract Description:
 
 7. UploadDeliveryHistory(string memory _newdest): 
     Upload the latest destination of delivery man (The parameter is the real address)
-    
+
+8. uploadImage(
+        address _customer,
+        string memory _imgHash,
+        string memory _description
+    ):  Send Image to blockchain for later use of customer
+
 *********** Client Side ***********
 1. GetHealthStatus(address DP): get the health status of DP
     @Return: (_FirstName, _LastName, _Email, _Phone, _TravelOrNot, _otherSymptom, _Contact, _Symptom)
@@ -54,6 +60,11 @@ Contract Description:
     ): Upload the order and some information of customer
 5. OrderArrive(): 
     @ Return: bool  => denotes whether the order has arrived
+6. GetImageHash():
+    @ Return: string => Get the image hash for later request to IPFS
+7. RateDeliver(adress _deliver, uint score):
+    Rate for this deliver
+
 */
 
 contract COVID is queue {
@@ -76,7 +87,7 @@ contract COVID is queue {
         uint256 id; // the id to help us find this guy in the array
         address customer; // the address of the matched customer
         bool matched; // whether this deliver is matched
-        Queue delivery_history; // all the locations where this deliver has been before
+        Queue delivery_history; // all the locations where this deliver has been before, including rates
     }
     // Customer
     struct Customer {
@@ -86,14 +97,13 @@ contract COVID is queue {
         bool arrived; // whether the order has arrived
         int256 total; // total cost of the order
         string restaurant_address;
+        Image img; // the image of delivered food
     }
 
     struct Image {
-        uint256 id;
         string hash;
         string description;
-        uint256 tipAmount;
-        address payable author;
+        bool exist;
     }
     /***********
      * Event definition
@@ -101,11 +111,11 @@ contract COVID is queue {
      */
     event UploadHistory(string[] allhistory, string newhistory);
     event ImageCreated(
-        uint256 id,
         string hash,
         string description,
-        uint256 tipAmount,
-        address payable author
+        bool exist,
+        address sender,
+        address receiver
     );
     event UpdateHealth(address DP);
     /**********
@@ -120,18 +130,16 @@ contract COVID is queue {
     // Record the Order of a customer
     mapping(address => Customer) private _CustomerOrder;
 
-    // Image
-    uint256 public imageCount = 0;
-    mapping(uint256 => Image) public images;
-
     /***************
      * Image Operations
      ******************
      */
 
-    function uploadImage(string memory _imgHash, string memory _description)
-        public
-    {
+    function uploadImage(
+        address _customer,
+        string memory _imgHash,
+        string memory _description
+    ) public {
         // Make sure the image hash exists
         require(bytes(_imgHash).length > 0);
         // Make sure image description exists
@@ -139,19 +147,11 @@ contract COVID is queue {
         // Make sure uploader address exists
         require(msg.sender != address(0));
 
-        // Increment image id
-        imageCount++;
-
         // Add Image to the contract
-        images[imageCount] = Image(
-            imageCount,
-            _imgHash,
-            _description,
-            0,
-            msg.sender
-        );
+        _CustomerOrder[_customer].img = Image(_imgHash, _description, true);
+
         // Trigger an event
-        emit ImageCreated(imageCount, _imgHash, _description, 0, msg.sender);
+        emit ImageCreated(_imgHash, _description, true, msg.sender, _customer);
     }
 
     /*************
@@ -297,7 +297,8 @@ contract COVID is queue {
             bool,
             bool,
             bool,
-            bool
+            bool,
+            int256[size2] memory
         )
     {
         Deliver memory deliver = _DeliverStatus[Deliv];
@@ -317,7 +318,8 @@ contract COVID is queue {
             deliver.TravelOrNot,
             deliver.otherSymptom,
             deliver.Contact,
-            deliver.Symptom
+            deliver.Symptom,
+            deliver.delivery_history.rates
         );
     }
 
@@ -373,5 +375,28 @@ contract COVID is queue {
         // Whether the order arrived
         bool arrived = _CustomerOrder[msg.sender].arrived;
         return arrived;
+    }
+
+    // Get the image
+    function GetImageHash() public view returns (string memory) {
+        require(
+            _CustomerOrder[msg.sender].img.exist == true,
+            "GetImageHash: The image does not exist!"
+        );
+        string memory imghash = _CustomerOrder[msg.sender].img.hash;
+        return imghash;
+    }
+
+    // Rate the deliver
+    function RateDeliver(address _deliver, int256 score) public {
+        require(
+            _DeliverStatus[_deliver].exist == true,
+            "RateDeliver: This deliver does not exist!"
+        );
+        // First, cancel the image hash
+        _CustomerOrder[msg.sender].img.exist = false;
+
+        // Now put this score into queues
+        push(_DeliverStatus[_deliver].delivery_history, score);
     }
 }
