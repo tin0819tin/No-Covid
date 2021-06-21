@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import faker from "faker";
 import loader from "../../api/map";
-
+import {geocode} from 'api/geolocation';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -63,10 +63,12 @@ export default function ActionPage(props) {
     const [phone, setPhone] = useState("");
     const [restaurant, setRestaurant] = useState("")
     const [total, setTotal] = useState(0);
-    const [clientLatitude, setClientLatitude] = useState(25);
-    const [clientLongitude, setClientLongitude] = useState(121.5);
+    const [clientLatitude, setClientLatitude] = useState(0);
+    const [clientLongitude, setClientLongitude] = useState(0);
     const [deliveryLatitude, setDeliveryLatitude] = useState(0);
     const [deliveryLongitude, setDeliveryLongitude] = useState(0);
+    const [restaurantLatitude, setRestaurantLatitude] = useState(0);
+    const [restaurantLongitude, setRestaurantLongitude] = useState(0);
 
 
 
@@ -83,7 +85,7 @@ export default function ActionPage(props) {
         getaccount();
         getCustomAddr();
         // loadmap();
-        console.log(restaurant)  
+        console.log(restaurant)        
     });
 
     useEffect(() => { // 初始 render
@@ -107,7 +109,7 @@ export default function ActionPage(props) {
 
         // 餐廳 marker
         var marker = new google.maps.Marker({
-            position: latlng,
+            position: { lat: restaurantLatitude, lng: restaurantLongitude },
             // animation: google.maps.Animation.BOUNCE,
             // label: 'restaurant',
             icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
@@ -201,6 +203,9 @@ export default function ActionPage(props) {
             setTotal(result1[4]);
             setOrderName(Object.values(result2));
 
+            geocode(result1[3], setRestaurantLatitude, setRestaurantLongitude);
+            setClientLatitude(25);
+            setClientLongitude(121.5);
             // console.log(orderResult);
             // console.log(orderName);
             // console.log(realAddress, phone, total);

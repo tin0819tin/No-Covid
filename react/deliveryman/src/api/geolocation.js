@@ -51,3 +51,20 @@ export const geolocation = (address, setConfirm) => (loader.loadCallback(() => {
 
     })
 )
+
+export const geocode = (address, setLat, setLng) => (loader.loadCallback(() => {
+    
+    const geocoder = new google.maps.Geocoder();
+    // const data = csv.toObjects('/deliveryman/TaiwanCovid.csv');
+    console.log(address);
+    geocoder.geocode( {address: address}, (results, status) => {
+        if (status === "OK"){
+            const lat = results[0].geometry.location.lat();
+            const lng = results[0].geometry.location.lng();
+            console.log(lat, lng)
+            setLat(lat);
+            setLng(lng);
+            }
+        })
+    })
+)
