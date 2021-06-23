@@ -13,8 +13,8 @@ import COVIDContract from "build/contracts/COVID.json"
 import Components from "views/Components/Components.js";
 import LandingPage from "views/LandingPage/LandingPage.js";
 import LoginPage from "views/LoginPage/LoginPage.js";
-// import ActionPage from "views/ActionPage/ActionPage";
-import ActionPage from "views/ActionPage/ActionPage_copy";
+import ActionPage from "views/ActionPage/ActionPage";
+// import ActionPage from "views/ActionPage/ActionPage_copy";
 import ArrivePage from "views/ArrivePage/ArrivePage";
 import OrderPage from "views/OrderPage/OrderPage";
 import ConfirmDeliveryPage from "views/ConfirmDeliveryPage/ConfirmDeliveryPage";
@@ -31,6 +31,7 @@ const NoCovid = () => {
 
     // Customer Property
     const [realAdress, setRealAddress] = useState("");
+    const [customerAddr, setCustomerAddr] = useState("");
 
      // Setup web3.js
     useEffect(() => {
@@ -79,8 +80,8 @@ const NoCovid = () => {
                 <Switch>
                     <Route path="/landing" render={(props) => <LandingPage {...props} contract={contract} />}  />
                     <Route path="/login" render={(props) => <LoginPage {...props} web3={web3} contract={contract} />} />
-                    <Route path="/action" render={(props) => <ActionPage {...props} web3={web3} contract={contract} setrealAddress={realAdress => setRealAddress(realAdress)}/>}  />    
-                    <Route path="/arrive" render={(props) => <ArrivePage {...props} web3={web3} contract={contract}  realAdress={realAdress}/>}  /> 
+                    <Route path="/action" render={(props) => <ActionPage {...props} web3={web3} contract={contract} setrealAddress={realAdress => setRealAddress(realAdress)} setcustomerAddr={customerAddr => setCustomerAddr(customerAddr)} />} />    
+                    <Route path="/arrive" render={(props) => <ArrivePage {...props} web3={web3} contract={contract}  realAdress={realAdress} customerAddr={customerAddr} />} /> 
                     <Route path="/order" render={(props) => <OrderPage {...props} web3={web3} contract={contract} />}  /> 
                     <Route path="/confirmDelivery" render={(props) => <ConfirmDeliveryPage {...props} web3={web3} contract={contract} />}  /> 
                     <Route path="/clientAction" render={(props) => <ClientActionPage {...props} web3={web3} contract={contract} />}  />  

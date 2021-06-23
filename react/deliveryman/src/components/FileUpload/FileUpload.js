@@ -4,17 +4,59 @@ import Progress from './Progress';
 import axios from 'axios';
 import Button from "components/CustomButtons/Button.js";
 
-const FileUpload = () => {
+const FileUpload = (props) => {
   const [file, setFile] = useState('');
   const [filename, setFilename] = useState('Choose File');
   const [uploadedFile, setUploadedFile] = useState({});
   const [message, setMessage] = useState('');
   const [uploadPercentage, setUploadPercentage] = useState(0);
+  const [buffer, setBuffer] = useState(null);
+  const [ipfsHash, setIpfsHash] = useState("");
 
-  const onChange = e => {
+  const {contract, ipfs, account, customerAddr} = props;
+
+  const captureFile = (e) => {
+    e.preventDefault();
     setFile(e.target.files[0]);
     setFilename(e.target.files[0].name);
-  };
+    const file = e.target.files[0];
+    const reader = new window.FileReader();
+    reader.readAsArrayBuffer(file);
+
+    reader.onloadend = () => {
+      setBuffer(Buffer(reader.result));
+      console.log(Buffer(reader.result));
+    }
+
+  }
+
+  const uploadImage = async (e) => {
+    e.preventDefault();
+    console.log("Submitting File to IPFS...");
+
+    try {
+      const postresponse =  await ipfs.add(buffer)
+      console.log("postResponse", postresponse.path);
+      setIpfsHash(postresponse.path);
+      setUploadedFile({ fileName:filename });
+      contract.methods.uploadImage(customerAddr, postresponse.path, filename).send({from: account});
+    }
+    catch(error){
+      console.log(error);
+      return;
+    }
+
+    // await ipfs.add(buffer, (error, result) => {
+    //   if (error){
+    //     console.log(error);
+    //     return
+    //   }
+    //   console.log('IPFS result: ', result[0].hash);
+    //   setIpfsHash(result[0].hash);
+    //   setUploadedFile({ fileName:filename });
+    // })
+
+  }
 
   const onSubmit = async e => {
     e.preventDefault();
@@ -56,20 +98,20 @@ const FileUpload = () => {
   return (
     <Fragment>
       {message ? <Message msg={message} /> : null}
-      <form onSubmit={onSubmit} style={{textAlign:"center"}}>
+      <form onSubmit={uploadImage} style={{textAlign:"center"}}>
         <div className='custom-file mb-4' style={{width:"50%", marginTop:"10em"}}>
           <input
             type='file'
             className='custom-file-input'
             id='customFile'
-            onChange={onChange}
+            onChange={captureFile}
           />
           <label className='custom-file-label' htmlFor='customFile'>
             {filename}
           </label>
         </div>
 
-        <Progress percentage={uploadPercentage} style={{}} />
+        <Progress uploaded={uploadedFile.fileName} style={{}} />
 
         <input
           type='submit'
@@ -82,7 +124,7 @@ const FileUpload = () => {
         <div className='row mt-5'>
           <div className='col-md-6 m-auto'>
             <h3 className='text-center'>{uploadedFile.fileName}</h3>
-            <img style={{ width: '100%' }} src={uploadedFile.filePath} alt='' />
+            <img style={{ width: '100%' }} src={`https://ipfs.infura.io/ipfs/${ipfsHash}`} alt='' />
           </div>
         </div>
       ) : null}

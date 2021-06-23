@@ -1,16 +1,18 @@
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 
-const Progress = ({ percentage }) => {
+const Progress = ({ uploaded }) => {
+
+  let font = (uploaded)? "100%" : "0%"
   return (
     <div style={{display:"flex", alignItems:"center", justifyContent:"center"}}> 
         <div className='progress' style={{width:"50%" , justifyContent:"center" }}>
             <div
-                className='progress-bar progress-bar-striped bg-success'
+                className='progress-bar progress-bar-striped progress-bar-animated bg-success'
                 role='progressbar'
-                style={{ width: `${percentage/2}%`, }}
+                style={{ width: uploaded? "100%": "0%" }}
             >
-                {percentage}%
+               {font} 
             </div>
         </div>
     </div> 
@@ -18,7 +20,7 @@ const Progress = ({ percentage }) => {
 };
 
 Progress.propTypes = {
-  percentage: PropTypes.number.isRequired
+  uploaded: PropTypes.string
 };
 
 export default Progress;

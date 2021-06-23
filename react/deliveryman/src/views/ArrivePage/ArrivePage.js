@@ -10,6 +10,9 @@ import { makeStyles } from "@material-ui/core/styles";
 // Google Map Geolocation
 import {geolocation} from 'api/geolocation';
 
+// IPFS Client
+import {create} from 'ipfs-http-client';
+
 // @material-ui/icons
 
 // core components
@@ -51,6 +54,9 @@ export default function ArrivePage(props) {
     const [account, setAccount] = useState("");
     const maxNumber = 69;
     const [confirm, setConfirm] = useState(null);
+
+    // const ipfsClient = require('ipfs-http-client');
+    const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
     
     // const onChange = (imageList, addUpdateIndex) => {
     //     // data for submit
@@ -60,10 +66,10 @@ export default function ArrivePage(props) {
 
     useEffect(() => {
         getaccount();
-        if (confirm === null ){
-            comfirmGeolocation();
-        }
-        console.log(confirm);
+        // if (confirm === null ){
+        //     comfirmGeolocation();
+        // }
+        // console.log(confirm);
     });
 
     const getaccount = async () => {
@@ -78,15 +84,16 @@ export default function ArrivePage(props) {
         geolocation(realAdress, setConfirm);
     }
 
-    const uploadDeliveryHistory = async() => {
-        if(confirm === true){
-            const result = await contract.methods.UploadDeliveryHistory(realAdress).send({from: account});
-        }
+    const uploadDeliveryHistory = () => {
+        // if(confirm === true){
+        //     const result = await contract.methods.UploadDeliveryHistory(realAdress).send({from: account});
+        // }
+        contract.methods.UploadDeliveryHistory(realAdress).send({from: account});
     }
 
     const classes = useStyles();
     const classes_2 = useStyles2();
-    const {web3, contract, realAdress, ...rest} = props;
+    const {web3, contract, realAdress, customerAddr, ...rest} = props;
     return (
         <div>
             <Header
@@ -102,7 +109,12 @@ export default function ArrivePage(props) {
                 {...rest}
             />
             <div className={classes.section}>
-                <FileUpload />
+                <FileUpload 
+                    contract={contract} 
+                    ipfs={ipfs}
+                    account={account}
+                    customerAddr={customerAddr}
+                />
             </div>
             <GridContainer justify="center">
                 <GridItem xs={12} sm={12} md={1} className={classes_2.grid}>

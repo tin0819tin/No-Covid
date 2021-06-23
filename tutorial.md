@@ -3,10 +3,10 @@
 基本流程為: deliver上傳image給ipfs，並將image hash上傳到blockchain，customer知道餐送到以後，利用自己的address上blockchain找到hash，並向ipfs拿取照片
 1. Deliver
 https://github.com/dappuniversity/decentragram/blob/master/src/components/App.js#L62
-在該頁面的.js上面建立ipfs client
+Prerequisite: 在該頁面的.js上面建立ipfs client
 ``` javascript
-const ipfsClient = require('ipfs-http-client')
-const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }) // 連線到這個ipfs node
+import {create} from 'ipfs-http-client';
+const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }); // 連線到這個ipfs node
 ```
 首先是對資料的處理
 ``` javascript
@@ -27,10 +27,28 @@ captureFile = event => {
 ```
 接著是要把資料(image)上傳到ipfs，同時把image的hash值傳給blockchain
 ``` javascript
+const uploadImage = async (e) => {
+    e.preventDefault();
+    console.log("Submitting File to IPFS...");
+
+    try {
+      const postresponse =  await ipfs.add(buffer)
+      console.log("postResponse", postresponse.path);
+      setIpfsHash(postresponse.path);
+      setUploadedFile({ fileName:filename });
+      contract.methods.uploadImage(customerAddr, postresponse.path, filename).send({from: account});
+    }
+    catch(error){
+      console.log(error);
+      return;
+    }
+}
+
+//  This method is deprecated already.
 uploadImage = description => {
     console.log("Submitting file to ipfs...")
 
-    //我們利用ipfs.add把buffer中的資料上傳到ipfs
+    //我們利用ipfs.add把buffer中的資料上傳到ipfs 
     ipfs.add(this.state.buffer, (error, result) => {
       console.log('Ipfs result', result)
       if(error) {
@@ -63,6 +81,6 @@ Reference: https://github.com/ipfs/js-ipfs/tree/master/packages/ipfs-http-client
 這個加在需要ipfs的page就好!
 ```javascript
 // in your .js
-const ipfsClient = require('ipfs-http-client')
-const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }) // Connect to this api address
+import {create} from 'ipfs-http-client';
+const ipfs = create({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' }); // Connect to this api address
 ```

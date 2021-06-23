@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from "react";
 import {Link} from "react-router-dom";
 import faker from "faker";
 import loader from 'api/map'
+import {geocode} from 'api/geolocation';
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -44,7 +45,7 @@ const useStyles = makeStyles(styles);
 
 export default function ActionPage(props) {
     const classes = useStyles();
-    const {web3, contract, setrealAddress, ...rest} = props;
+    const {web3, contract, setrealAddress, setcustomerAddr, ...rest} = props;
 
     const [cardAnimaton, setCardAnimation] = useState("cardHidden");
     const [anchorElBottom, setAnchorElBottom] = useState(null);
@@ -65,7 +66,7 @@ export default function ActionPage(props) {
     }
 
     const setUpOrder = () => {
-        contract.methods.UploadOrder([1, 2, 3, 0, 4, 3], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0975666777", "No. 169, Section 2, Xinhai Road, Daan District, Taipei City", 666).send({from: account});
+        contract.methods.UploadOrder([4, 2, 0, 1, 4, 3], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0975666777", "No. 169, Section 2, Xinhai Road, Daan District, Taipei City", 666).send({from: account});
     }
 
     useEffect(() => {
@@ -91,6 +92,32 @@ export default function ActionPage(props) {
             });
         });
     };
+
+    const calculateAndDisplayRoute = (directionsService, directionsRenderer) => {
+        directionsService.route(
+            {
+              origin: {
+                lat: deliveryLatitude, lng: deliveryLongitude,
+              },
+              destination: {
+                lat: clientLatitude, lng: clientLongitude,
+              },
+              travelMode: google.maps.TravelMode.DRIVING,
+              waypoints:[
+                  {
+                      location: { lat: restaurantLatitude, lng: restaurantLongitude },
+                  }
+              ]
+            },
+            (response, status) => {
+              if (status === "OK") {
+                directionsRenderer.setDirections(response);
+              } else {
+                // window.alert("Directions request failed due to " + status);
+              }
+            }
+          );
+    } 
 
     const getCustomAddr = async() => {
         if (contract !== null){
@@ -289,7 +316,7 @@ export default function ActionPage(props) {
                                         color="success" 
                                         size="lg"
                                         // href="http://localhost:3000/arrive"
-                                        onClick={() => {console.log(realAddress); setrealAddress(realAddress);}}
+                                        onClick={() => {console.log(realAddress); setrealAddress(realAddress); setcustomerAddr(customerAddr);}}
                                         >
                                         Delivered!
                                         </Button>
