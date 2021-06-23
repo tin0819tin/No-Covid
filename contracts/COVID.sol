@@ -29,12 +29,10 @@ Contract Description:
 5. GetProduct():
     @ Product name in tuple: (Product1, Product2, ...., Product6)
 
-6. FinishMatch(address customer): Finish the match with the customer and inform the customer to take his order(send photos and location)
+6. FinishMatch(address customer, string memory _newdest): Finish the match with the customer and inform the customer to take his order(send photos and location)
+    and Upload the latest destination of delivery man (The parameter is the real address)
 
-7. UploadDeliveryHistory(string memory _newdest): 
-    Upload the latest destination of delivery man (The parameter is the real address)
-
-8. uploadImage(
+7. uploadImage(
         address _customer,
         string memory _imgHash,
         string memory _description
@@ -230,13 +228,29 @@ contract COVID is queue {
         );
     }
 
-    function FinishMatch(address customer) public {
+    function FinishMatch(address customer, string memory _newdest) public {
         require(
             _DeliverStatus[msg.sender].exist == true,
             "FinishMatch:This Deliver does not exist"
         );
         _DeliverStatus[msg.sender].matched = false;
         _CustomerOrder[customer].arrived = true;
+
+        // Make sure this deliver exist
+        require(
+            _DeliverStatus[msg.sender].exist == true,
+            "UploadDeliveryHistory: The deliver does not exist!"
+        );
+        require(
+            bytes(_newdest).length > 0,
+            "UploadDeliveryHistory: The latest delivery history should not be empty string!"
+        );
+
+        push(_DeliverStatus[msg.sender].delivery_history, _newdest);
+        emit UploadHistory(
+            datas(_DeliverStatus[msg.sender].delivery_history),
+            _newdest
+        );
     }
 
     // Get all the product name
@@ -259,24 +273,6 @@ contract COVID is queue {
             "Donut",
             "Macaron",
             "Milkshake"
-        );
-    }
-
-    function UploadDeliveryHistory(string memory _newdest) public {
-        // Make sure this deliver exist
-        require(
-            _DeliverStatus[msg.sender].exist == true,
-            "UploadDeliveryHistory: The deliver does not exist!"
-        );
-        require(
-            bytes(_newdest).length > 0,
-            "UploadDeliveryHistory: The latest delivery history should not be empty string!"
-        );
-
-        push(_DeliverStatus[msg.sender].delivery_history, _newdest);
-        emit UploadHistory(
-            datas(_DeliverStatus[msg.sender].delivery_history),
-            _newdest
         );
     }
 
