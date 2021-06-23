@@ -11,6 +11,7 @@ import faker from "faker";
 // core components
 import Header from "components/Header/Header.js";
 import Footer from "components/Footer/Footer.js";
+import HeaderLinks from "components/Header/HeaderLinks.js";
 import GridContainer from "components/Grid/GridContainer.js";
 import GridItem from "components/Grid/GridItem.js";
 import Parallax from "components/Parallax/Parallax.js";
@@ -36,9 +37,10 @@ const useStyles2 = makeStyles(styles2);
 export default function OrderPage(props) {
   const classes1 = useStyles1();
   const classes2 = useStyles2();
-  const { contract, ...rest } = props;
+  const {web3, contract, ...rest} = props;
   const dessert_width = "200";
   const dessert_height = "300";
+  const [clientAddr, setClientAddr] = useState("0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5");
   const [num_chocolate_cake, setNum_chocolate_cake] = useState(0);
   const [num_cupcake, setNum_cupcake] = useState(0);
   const [num_ice_cream, setNum_ice_cream] = useState(0);
@@ -49,8 +51,6 @@ export default function OrderPage(props) {
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [visible, setVisible] = useState(false);
-  const clinet_test = "0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5";
-  const delivery_test = "0x97D40c60E86De40b75Dd703cD117eb92Fbc8536c";
 
   const showDrawer = () => {
     setVisible(true);
@@ -68,19 +68,47 @@ export default function OrderPage(props) {
     setNum_macaron(0);
     setNum_milkshake(0);
     setAddress("");
+    document.getElementById("addressInput").value = ""
     setPhone("");
+    document.getElementById("phoneInput").value = ""
     setCosts(0)
     onClose();
   };
-
+  
   const setUpOrder = (num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs) => {
-    console.log(contract);
-    contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut,  num_macaron, num_milkshake], address, phone, costs).send({from: clinet_test});
-    console.log([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake], address, phone, costs)
+    const restaurant_address = "No. 16-1, Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan"
+    contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut,  num_macaron, num_milkshake], address,  phone, restaurant_address, costs).send({from: clientAddr});
+    console.log(clientAddr, "order")
+    console.log([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake], address, phone, restaurant_address, costs)
 }
+
+  const getaccount = async () => {
+    console.log(web3, contract)
+    if(web3 !== null && contract !== null){
+        const accountresult = await web3.eth.getAccounts(); // get accounts
+        console.log("accountresult", accountresult);
+        setClientAddr(accountresult[0]); // 第一個為 client
+    }    
+  }
+
+  useEffect(() => { // 初始 render
+    getaccount();
+  }, [web3, contract]);
 
   return (
     <>
+      {/* <Header
+        id="orderHeader"
+        color="transparent"
+        brand="Welcome to No-Covid"
+        rightLinks={<HeaderLinks />}
+        fixed
+        changeColorOnScroll={{
+          height: 200,
+          color: "white",
+        }}
+        {...rest}
+      /> */}
     <div>
       <Parallax filter image={faker.image.imageUrl()}>
         <div className={classes2.container}>
@@ -96,6 +124,7 @@ export default function OrderPage(props) {
           <div className={classes2.container}>
             <div className={classes1.section}>
             <Drawer
+              id="orderList"
               title="My Order"
               placement="right"
               closable={false}
@@ -104,14 +133,18 @@ export default function OrderPage(props) {
             >
             <h5>
               Destination
-              <Input onChange={(event) => {
+              <Input
+                id="addressInput"
+                onChange={(event) => {
                 setAddress(event.target.value)
-                // console.log(address)
+                console.log(event.target.value)
                 }} placeholder="Address" />
             </h5>
             <h5>
               Your phone number
-              <Input onChange={(event) => {
+              <Input 
+                id="phoneInput"
+                onChange={(event) => {
                 setPhone(event.target.value)
                 // console.log(phone)
               }} placeholder="Phone number" />
@@ -158,7 +191,7 @@ export default function OrderPage(props) {
               onClick={() =>
               {
                 setUpOrder(num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs);
-                resetOrder;
+                resetOrder();
                 }} disabled={!costs}> send my order </Button>
             </Link>  
             <Button size="sm" color="rose" onClick={resetOrder}>reset</Button>
@@ -298,7 +331,7 @@ export default function OrderPage(props) {
           </div> 
         </div>
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div> 
     </>
   );

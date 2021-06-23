@@ -1,4 +1,25 @@
-#map {
+/* #orderHeader {
+    z-index: 1;
+} */
+
+/* #orderList {
+    z-index: 0;
+} */
+
+#mapClientAction {
+    height: 600px;
+    width: 100%;
+    position:absolute;
+    z-index: 1;
+   }
+
+#mapConfirmDelivery {
     height: 400px;
     width: 100%;
-   }
+}
+
+#receiveMeal {
+    position:absolute;
+    top: 120px; left: 12px;
+    z-index: 2;
+}

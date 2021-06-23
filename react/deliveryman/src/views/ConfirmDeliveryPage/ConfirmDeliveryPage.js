@@ -18,15 +18,12 @@ import HeaderLinks from "components/Header/HeaderLinks.js";
 import Parallax from "components/Parallax/Parallax.js";
 import profile from "assets/img/faces/christian.jpg";
 import styles from "assets/jss/material-kit-react/views/profilePage.js";
-import { green } from "@material-ui/core/colors";
 
 const useStyles = makeStyles(styles);
 
 export default function ConfirmDeliveryPage(props) {
   const classes = useStyles();
   const {web3, contract, ...rest} = props;
-  console.log(web3)
-  console.log(contract)
   const imageClasses = classNames(
     classes.imgRaised,
     classes.imgRoundedCircle,
@@ -35,6 +32,7 @@ export default function ConfirmDeliveryPage(props) {
   // const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
   const [clientAddr, setClientAddr] = useState("0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5");
   const [deliveryAddr, setDeliveryAddr] = useState("0x97D40c60E86De40b75Dd703cD117eb92Fbc8536c");
+  const [deliveryIndex, setDeliveryIndex] = useState(0);
   const [FirstName, setFirstName] = useState("Wesly");
   const [LastName, setLastName] = useState("Hsieh");
   const [Email, setEmail] = useState("covid@gmail.com");
@@ -44,20 +42,15 @@ export default function ConfirmDeliveryPage(props) {
   const [Contact, setContact] = useState("None");
   const [Symptom, setSymptom] = useState("None");
   const [Score, setScore] = useState(0);
-  const [deliveryInfo, setDeliveryInfo] = useState("");
+  const [deliveryInfo, setDeliveryInfo] = useState([]);
   const [clientLatitude, setLatitude] = useState(0);
   const [clientLongitude, setLongitude] = useState(0);
   const [deliveryLocation, setDeliveryLocation] = useState([]);
 
-//   useEffect(() => {
-//     contract.methods.UploadOrder([1, 2, 3, 0, 1, 2], "No. 1, Sec. 4, Roosevelt Rd., Taipei", "0912345678", 120).send({from: clinet_test});
-//     contract.methods.MatchWithDeliver(delivery_test).send({from: clinet_test});
-// });
-
   loader.load().then(() => {
     const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度
 
-    const map = new google.maps.Map(document.getElementById("map"), {
+    const map = new google.maps.Map(document.getElementById("mapConfirmDelivery"), {
       center: { lat: clientLatitude, lng: clientLongitude },
       zoom: 12,
     });
@@ -67,10 +60,6 @@ export default function ConfirmDeliveryPage(props) {
       // animation: google.maps.Animation.BOUNCE,
       // label: 'restaurant',
       icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
-      // http://maps.google.com/mapfiles/ms/icons/green-dot.png
-      // http://maps.google.com/mapfiles/ms/icons/blue-dot.png
-      // http://maps.google.com/mapfiles/ms/icons/red-dot.png
-      // http://maps.google.com/mapfiles/ms/icons/yellow-dot.png
       map: map
   });
   });
@@ -95,66 +84,98 @@ export default function ConfirmDeliveryPage(props) {
     geolocation(realAdress, setConfirm);
 }
 
-  const getDelivery = () => {
-      let deleviryIndex = 0;
-      while (deleviryIndex < deliveryInfo.length) {
-        if ((deliveryInfo[deliveryIndex].matched == False)){
-          // 判斷這個外送員沒有被 matched 且不在此顧客不願配對的名單內
-          deliveryMan = deliveryInfo[deliveryIndex];
-          setDeliveryAddr();
-          setFirstName(deliveryMan.FirstName);
-          setLastName(deliveryMan.LastName);
-          setEmail(deliveryMan.Email);
-          setPhone(deliveryMan.Phone);
-          setTravelOrNot(deliveryMan.TravelOrNot);
-          setotherSymptom(deliveryMan.otherSymptom);
-          setContact(deliveryMan.Contact);
-          setSymptom(deliveryMan.Symptom);
-          setScore(deliveryMan.Score);
-          break;
-        }else{
-          deleviryIndex += 1;
-        }
-      }
-    }
-
   const getaccount = async () => {
-      if(web3 !== null && contract !== null){
-          const accountresult = await web3.eth.getAccounts(); // get accounts
-          console.log(accountresult);
-          setClientAddr(accountresult[0]);
-          setDeliveryAddr(accountresult[1]);
-          const deliveryList = await contract.methods.GetAllDeliver().call({from: clientAddr});
-          setDeliveryInfo(deliveryList)
-          console.log(deliveryInfo)
-      }    
+    console.log(web3, contract)
+    if(web3 !== null && contract !== null){
+        const accountresult = await web3.eth.getAccounts(); // get accounts
+        console.log("accountresult", accountresult);
+        setClientAddr(accountresult[0]); // 第一個為 client
+    }    
   }
 
-  const setUpMatch = (deliveryAddr) => {
-    contract.methods.MatchWithDeliver(deliveryAddr).send({from: clinetAddr});
+  const getDelivery = async () => {
+      if(web3 !== null && contract !== null){
+        // get all delivery addres
+        const deliveryList = await contract.methods.GetAllDeliver().call({from: clientAddr});
+        console.log("deliveryList", deliveryList)
+        const deliveryList_can_match = [];
+        // find the deliveryMan isn't matched
+        for (let i = 0; i < deliveryList.length; i++) {
+          const deliveryMatch = await contract.methods.GetMatchedCustomer().call({from: deliveryList[i]})
+          if ((deliveryMatch[0] === false)){
+            deliveryList_can_match.push(deliveryList[i])
+          }
+        }
+        setDeliveryInfo(deliveryList_can_match)
+        console.log(deliveryList_can_match)
+        // initial deliveryMan
+
+        setDeliveryAddr(deliveryList_can_match[0])
+        // test
+        contract.methods.UploadHealthStatus("ethen", "tsao", "ss", "099", true, true, true, true).send({from: deliveryList[0]})
+        contract.methods.UploadHealthStatus("ethe", "tso", "s", "99", true, true, true, true).send({from: deliveryList[1]})
+        console.log("there are", deliveryList_can_match.length, "available delivery men")
+      }else{
+        console.log("web3 or contract is null");
+      }
+
+    }
+
+
+  const setUpMatch = () => {
+    contract.methods.MatchWithDeliver(deliveryAddr).send({from: clientAddr});
 }
 
-  const chooseNotDelivery = (deliveryAddr) => {
-    const deliveryList = deliveryInfo.filter(item => item !== deliveryAddr)
-    setDeliveryInfo(deliveryList);
+  const chooseNotDelivery = async () => {
+    // deliveryIndex === 0 for initial
+    console.log(deliveryIndex, "/", deliveryInfo.length)
+    if(deliveryIndex < deliveryInfo.length) {
+      // set delivery address
+      setDeliveryAddr(deliveryInfo[deliveryIndex])
+      console.log(deliveryAddr, "=", deliveryInfo[deliveryIndex])
+      // get delivery health status
+      const deliveryHealth = await contract.methods.GetHealthStatus(deliveryAddr).call({from: clientAddr})
+      const deliveryHistory = await contract.methods.GetDeliverHistory(deliveryAddr).call({from: clientAddr})
+      // console.log("deliveryHistory", deliveryHistory)
+      var scores = []
+      for(let i=0; i<deliveryHealth[8].length; i++){
+        scores.push(parseInt(deliveryHealth[8][i]));
+      }
+      console.log(scores)
+      console.log("deliveryHealth", deliveryHealth)
+      // get delivery match status
+      const deliveryMatch = await contract.methods.GetMatchedCustomer().call({from: deliveryAddr})
+      console.log("deliveryMatch", deliveryMatch)
+      setFirstName(deliveryHealth[0]);
+      setLastName(deliveryHealth[1]);
+      setEmail(deliveryHealth[2]);
+      setPhone(deliveryHealth[3]);
+      setTravelOrNot(deliveryHealth[4]);
+      setotherSymptom(deliveryHealth[5]);
+      setContact(deliveryHealth[6]);
+      setSymptom(deliveryHealth[7]);
+      setScore(deliveryHealth[8]);
+    }
   }
 
   useEffect(() => { // 初始 render
     getLocation();
+  }, [clientLatitude, clientLongitude]);
+
+  useEffect(() => { // 初始 render
     getaccount();
+  }, [web3, contract]);
+
+  useEffect(() => { // 初始 render
+    getDelivery();
+    chooseNotDelivery();
     if (confirm === null ){
       comfirmGeolocation();
   }
-  console.log(confirm);
-  }, [clientLatitude, clientLongitude]);
-
-  useEffect(() => {
-    getDelivery();
-  }, [chooseNotDelivery]);
+  }, [web3, contract]);
 
   return (
     <div>
-      {/* <div id="map"></div> */}
       <Header
         color="transparent"
         brand="Welcome to No-Covid"
@@ -204,7 +225,7 @@ export default function ConfirmDeliveryPage(props) {
             </Descriptions>
             </GridContainer>
             <br></br>
-            <div id="map"></div>
+            <div id="mapConfirmDelivery"></div>
             <br></br>
             <GridContainer justify="center">
             <Link to="/clientAction">
@@ -222,9 +243,8 @@ export default function ConfirmDeliveryPage(props) {
             size="sm" 
             color="rose"
             onClick ={()=> {
-              chooseNotDelivery.push(Phone);
-              console.log(chooseNotDelivery);
-              getDelivery();
+              chooseNotDelivery();
+              setDeliveryIndex(deliveryIndex + 1);
             }}
             > Change another delivery man </Button>
             &nbsp;
@@ -237,7 +257,6 @@ export default function ConfirmDeliveryPage(props) {
             </GridContainer>
             <br></br>
           </div>
-          {/* <div id="map"></div> */}
         </div>
       </div>
       <Footer />
