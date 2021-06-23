@@ -18,6 +18,11 @@ contract queue {
         return (q.back + size - q.front) % size;
     }
 
+    /// @dev the number of elements stored in the queue.
+    function intlength(Queue storage q) internal view returns (uint256) {
+        return (q.int_back + size2 - q.int_front) % size2;
+    }
+
     /// @dev remove and return the element at the front of the queue
     function pop(Queue storage q) internal returns (string memory r) {
         require(q.back != q.front); // There is no element in this queue;
@@ -59,6 +64,26 @@ contract queue {
         uint256 j = 0;
         for (uint256 i = q.front; i < back; i++) {
             tmp[j] = q.data[i % size];
+            j += 1;
+        }
+        return tmp;
+    }
+
+    /// @dev Returns all the datas in order
+    function intdatas(
+        int256[size2] memory rates,
+        uint256 int_front,
+        uint256 int_back
+    ) internal view returns (int256[] memory) {
+        int256[] memory tmp =
+            new int256[]((int_back + size2 - int_front) % size2);
+        uint256 back = int_back;
+        if (back < int_front) {
+            back += size2;
+        }
+        uint256 j = 0;
+        for (uint256 i = int_front; i < back; i++) {
+            tmp[j] = rates[i % size2];
             j += 1;
         }
         return tmp;

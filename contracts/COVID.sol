@@ -298,7 +298,7 @@ contract COVID is queue {
             bool,
             bool,
             bool,
-            int256[size2] memory
+            int256[] memory
         )
     {
         Deliver memory deliver = _DeliverStatus[Deliv];
@@ -319,7 +319,11 @@ contract COVID is queue {
             deliver.otherSymptom,
             deliver.Contact,
             deliver.Symptom,
-            deliver.delivery_history.rates
+            intdatas(
+                deliver.delivery_history.rates,
+                deliver.delivery_history.int_front,
+                deliver.delivery_history.int_back
+            )
         );
     }
 
