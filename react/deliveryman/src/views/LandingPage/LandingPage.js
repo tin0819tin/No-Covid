@@ -113,6 +113,7 @@ export default function LandingPage(props) {
                     Delivery Man
                   </Button>
                 </Link>
+                <Link to="/order">
                 <Button
                   color="primary"
                   size="lg"
@@ -120,6 +121,7 @@ export default function LandingPage(props) {
                 >
                   Customer
                 </Button>
+                </Link>
               </GridItem>
             </GridContainer>
           </div>

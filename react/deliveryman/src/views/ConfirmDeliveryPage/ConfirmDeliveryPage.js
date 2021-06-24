@@ -30,21 +30,23 @@ export default function ConfirmDeliveryPage(props) {
     classes.imgFluid
   );
   // const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
-  const [clientAddr, setClientAddr] = useState("0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5");
+  const [clientAddr, setClientAddr] = useState("");
   const [deliveryAddr, setDeliveryAddr] = useState("");
   const [deliveryIndex, setDeliveryIndex] = useState(0);
-  const [FirstName, setFirstName] = useState("Wesly");
-  const [LastName, setLastName] = useState("Hsieh");
-  const [Email, setEmail] = useState("covid@gmail.com");
-  const [Phone, setPhone] = useState("0912345678");
-  const [TravelOrNot, setTravelOrNot] = useState("None");
-  const [otherSymptom, setotherSymptom] = useState("None");
-  const [Contact, setContact] = useState("None");
-  const [Symptom, setSymptom] = useState("None");
+  const [FirstName, setFirstName] = useState("");
+  const [LastName, setLastName] = useState("");
+  const [Email, setEmail] = useState("");
+  const [Phone, setPhone] = useState("");
+  const [TravelOrNot, setTravelOrNot] = useState("");
+  const [otherSymptom, setotherSymptom] = useState("");
+  const [Contact, setContact] = useState("");
+  const [Symptom, setSymptom] = useState("");
   const [Score, setScore] = useState(0);
   const [deliveryInfo, setDeliveryInfo] = useState([]);
   const [clientLatitude, setLatitude] = useState(0);
   const [clientLongitude, setLongitude] = useState(0);
+  const [confirm, setConfirm] = useState(false);
+  const [confirmList, setConfirmList] = useState(null);
   const [deliveryLocation, setDeliveryLocation] = useState([]);
 
   loader.load().then(() => {
@@ -58,17 +60,17 @@ export default function ConfirmDeliveryPage(props) {
     var iconHome = {
       url: "https://imgur.com/Q2KsdLh.jpg", // url
       scaledSize: new google.maps.Size(30, 30), // size
-  };
+    };
 
     var iconDanger = {
       url: 'https://imgur.com/CTZIgOo.jpg', // url
       scaledSize: new google.maps.Size(30, 30), // size
-  };
+    };
 
     var iconSafe = {
       url: 'https://imgur.com/uRsoHo7.jpg',
       scaledSize: new google.maps.Size(30, 30), // size
-  };
+    };
 
     var iconDelivery = {
       url: 'https://imgur.com/tYsXNec.jpg',
@@ -84,19 +86,25 @@ export default function ConfirmDeliveryPage(props) {
       position: { lat: clientLatitude, lng: clientLongitude },
       icon: iconHome,
       map: map
-  });
+    });
 
     var marker = new google.maps.Marker({
       position: latlng,
       icon: iconDanger,
       map: map
-  });
+    });
 
   //   var marker = new google.maps.Marker({
   //     position: latlng,
   //     icon: iconSafe,
   //     map: map
   // });
+
+    var marker = new google.maps.Marker({
+      position: latlng,
+      icon: iconRestaurant,
+      map: map
+  });
   });
 
   const getLocation = () => {
@@ -115,46 +123,47 @@ export default function ConfirmDeliveryPage(props) {
     console.log("Longitude: " + clientLongitude)
   }
 
-  const comfirmGeolocation = async() => {
-    geolocation(realAdress, setConfirm);
-}
+  const comfirmGeolocation = () => {
+    const restaurant_address = "No. 16-1, Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan"
+    geolocation(restaurant_address, setConfirm);
+    console.log("geolocation", confirm)
+    console.log("geolocation", confirm)
+  }
 
   const getaccount = async () => {
     console.log(web3, contract)
     if(web3 !== null && contract !== null){
-        const accountresult = await web3.eth.getAccounts(); // get accounts
-        console.log("accountresult", accountresult);
-        setClientAddr(accountresult[0]); // 第一個為 client
+      const accountresult = await web3.eth.getAccounts(); // get accounts
+      console.log("accountresult", accountresult);
+      setClientAddr(accountresult[0]); // 第一個為 client
     }    
   }
 
   const getDelivery = async () => {
-      if(web3 !== null && contract !== null){
-        // get all delivery addres
-        const deliveryList = await contract.methods.GetAllDeliver().call({from: clientAddr});
-        console.log("deliveryList", deliveryList)
-        const deliveryList_can_match = [];
-        // find the deliveryMan isn't matched
-        for (let i = 0; i < deliveryList.length; i++) {
-          const deliveryMatch = await contract.methods.GetMatchedCustomer().call({from: deliveryList[i]})
-          if ((deliveryMatch[0] === false)){
-            deliveryList_can_match.push(deliveryList[i])
-          }
+    if(web3 !== null && contract !== null){
+      // get all delivery addres
+      const deliveryList = await contract.methods.GetAllDeliver().call({from: clientAddr});
+      console.log("deliveryList", deliveryList)
+      const deliveryList_can_match = [];
+      // find the deliveryMan isn't matched
+      for (let i = 0; i < deliveryList.length; i++) {
+        const deliveryMatch = await contract.methods.GetMatchedCustomer().call({from: deliveryList[i]})
+        if ((deliveryMatch[0] === false)){
+          deliveryList_can_match.push(deliveryList[i])
         }
-        setDeliveryInfo(deliveryList_can_match)
-        console.log("deliveryList_can_match", deliveryList_can_match)
-        // test
-        console.log("there are", deliveryList_can_match.length, "available delivery men")
-      }else{
-        console.log("web3 or contract is null");
       }
-
+      setDeliveryInfo(deliveryList_can_match)
+      console.log("deliveryList_can_match", deliveryList_can_match)
+      // test
+      console.log("there are", deliveryList_can_match.length, "available delivery men")
+    }else{
+      console.log("web3 or contract is null");
     }
-
+  }
 
   const setUpMatch = () => {
     contract.methods.MatchWithDeliver(deliveryAddr).send({from: clientAddr});
-}
+  }
 
   const chooseNotDelivery = async () => {
     // deliveryIndex === 0 for initial
@@ -176,6 +185,11 @@ export default function ConfirmDeliveryPage(props) {
       if(scores.length > 0){
         scoresAvg /= deliveryHealth[8].length
       }
+      for(let i=0; i<deliveryHistory.length; i++){
+        geolocation(deliveryHistory[i], setConfirm);
+      }
+      comfirmGeolocation()
+      console.log(confirm)
       console.log("deliveryHealth", deliveryHealth)
       console.log("deliveryHistory", deliveryHistory)
 
@@ -246,8 +260,17 @@ export default function ConfirmDeliveryPage(props) {
                     <img src={"https://img.88icon.com/download/jpg/20200902/7a76bdc81863c456fa4355fc9cd09b4f_512_512.jpg!88bg"} alt="..." className={imageClasses} />
                   </div>
                   <div className={classes.name}>
-                    <h3 className={classes.title}>{FirstName}</h3>
-                    <h6>Delivery ID: {deliveryAddr}</h6>
+                    {!(deliveryInfo.length)?
+                    <>
+                      <h3 className={classes.title}>No available delivery man</h3>
+                      <h6>Wait for a while and fresh this page later</h6>
+                    </>
+                    :
+                    <>
+                      <h3 className={classes.title}>{FirstName}</h3>
+                      <h6>Delivery ID: {deliveryAddr}</h6>
+                    </>             
+                    }
                   </div>
                 </div>
               </GridItem>
@@ -257,22 +280,27 @@ export default function ConfirmDeliveryPage(props) {
               </p>
             </div>
             <GridContainer justify="center">
-            <Descriptions title="Info of your Delivery Man">
-              <Descriptions.Item label="Name">{FirstName}, {LastName}</Descriptions.Item>
-              <Descriptions.Item label="Phone">{Phone}</Descriptions.Item>
-              <Descriptions.Item label="Email">{Email}</Descriptions.Item>
-              <Descriptions.Item label="TravelOrNot">{TravelOrNot}</Descriptions.Item>
-              <Descriptions.Item label="otherSymptom">{otherSymptom}</Descriptions.Item>
-              <Descriptions.Item label="Contact">{Contact}</Descriptions.Item>
-              <Descriptions.Item label="Symptom">{Symptom}</Descriptions.Item>
-              <Descriptions.Item label="Score">{Score}</Descriptions.Item>
-            </Descriptions>
+            {!(deliveryInfo.length)?
+              <></>
+              :
+              <>
+                <Descriptions title="Info of your Delivery Man">
+                  <Descriptions.Item label="Name">{FirstName}, {LastName}</Descriptions.Item>
+                  <Descriptions.Item label="Phone">{Phone}</Descriptions.Item>
+                  <Descriptions.Item label="Email">{Email}</Descriptions.Item>
+                  <Descriptions.Item label="TravelOrNot">{TravelOrNot}</Descriptions.Item>
+                  <Descriptions.Item label="otherSymptom">{otherSymptom}</Descriptions.Item>
+                  <Descriptions.Item label="Contact">{Contact}</Descriptions.Item>
+                  <Descriptions.Item label="Symptom">{Symptom}</Descriptions.Item>
+                  <Descriptions.Item label="Score">{Score}</Descriptions.Item>
+                </Descriptions>
+              </>             
+            }
             </GridContainer>
             <br></br>
             <div id="mapConfirmDelivery"></div>
             <br></br>
             <GridContainer justify="center">
-            <Link to="/clientAction">
               <Button 
               size="sm" 
               color="success"
@@ -280,8 +308,12 @@ export default function ConfirmDeliveryPage(props) {
               onClick ={()=> {
                 setUpMatch();
               }}
-              > Confirm my order </Button>
-            </Link>
+              disabled={!(deliveryInfo.length)}
+              >
+              <Link to={(deliveryInfo.length) ? '/clientAction' : '#'} style={{color:"white"}}>
+              Confirm my order 
+              </Link>
+              </Button>
             &nbsp; 
             <Button 
             size="sm" 
@@ -305,7 +337,13 @@ export default function ConfirmDeliveryPage(props) {
       </div>
       <Button
       onClick={()=>{
-        contract.methods.UploadHealthStatus("ethen", "tsao", "ss", "099", true, true, true, true).send({from: "0xC387D16bC14851DC14f707B08d567bFD633545B3"})
+        console.log(confirm)
+        contract.methods.UploadHealthStatus("co", "tsao", "ss", "09", true, true, true, true).send({from: "0x6F69116D643EDc78D917Cd4BFa6a4e847F210b1D"})
+      }
+      }></Button>
+      <Button
+      onClick={()=>{
+        comfirmGeolocation()
       }
       }></Button>
       {/* <Footer /> */}

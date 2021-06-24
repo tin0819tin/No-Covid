@@ -21,8 +21,6 @@ import styles from "assets/jss/material-kit-react/views/actionPage.js";
 
 const useStyles = makeStyles(styles);
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
-
 export default function ActionPage(props) {
     const classes = useStyles();
     const {web3, contract, ...rest} = props;
@@ -41,6 +39,7 @@ export default function ActionPage(props) {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [imageHash, setImageHash] = useState("");
     const [mealArrived, setMealArrived] = useState(false);
+    const [mealMessage, setMealMessage] = useState("Your meal is coming...")
 
     loader.load().then(() => {
         const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度
@@ -119,6 +118,17 @@ export default function ActionPage(props) {
     //     }
     // };
 
+    const getaccount = async () => {
+      console.log(web3, contract)
+      if(web3 !== null && contract !== null){
+          const accountresult = await web3.eth.getAccounts(); // get accounts
+          console.log("accountresult", accountresult);
+         
+          setClientAddr(accountresult[0]); // 第一個為 client
+          // console.log("deliveryAddr", deliveryAddr)
+      }    
+    }
+
     const getDelivery = async () => {
       if(web3 !== null && contract !== null){
         // get all delivery addres
@@ -139,6 +149,13 @@ export default function ActionPage(props) {
       }
     }
 
+    const getFoodImage = async () => {
+      if (mealArrived){
+        var Hash = await contract.methods.GetImageHash().call({from: clientAddr})
+        console.log("Hash", Hash)
+        setImageHash(Hash)
+    }
+    }
 
     const sendDeliveryRate = () => {
       console.log(clientAddr, deliveryAddr, deliveryRate)
@@ -153,7 +170,7 @@ export default function ActionPage(props) {
   
     const handleOk = () => {
       setIsModalVisible(false);
-      history.push("http://localhost:3000/order")
+      // history.push("http://localhost:3000/order")
     };
   
     const handleCancel = () => {
@@ -173,35 +190,22 @@ export default function ActionPage(props) {
         },
       };
 
-    const getaccount = async () => {
-      console.log(web3, contract)
-      if(web3 !== null && contract !== null){
-          const accountresult = await web3.eth.getAccounts(); // get accounts
-          console.log("accountresult", accountresult);
-          
-          setClientAddr(accountresult[0]); // 第一個為 client
-          // console.log("deliveryAddr", deliveryAddr)
-      }    
-    }
-
-    const getFoodImage = async () => {
-      if (mealArrived){
-        var Hash = await contract.methods.GetImageHash().call({from: clientAddr})
-        console.log("Hash", Hash)
-        setImageHash(Hash)
-    }
-    }
-
-    const getMealArrived = async () => {
-      if (mealArrived){
+    const interval = setInterval(async () => {
+      if(web3 !== null && contract !== null && clientAddr !== "" && mealArrived !== true){
         var mealStatus = await contract.methods.OrderArrive().call({from: clientAddr})
         console.log("mealStatus", mealStatus)
-    }
-    }
+        mealStatus = true
+        if(mealStatus === true){
+          setMealArrived(true)
+          setMealMessage("Your Meal is Arrived!!!")
+          clearInterval(interval)
+        }
+      }
+  }, 3000);
 
     useEffect(() => { // 初始 render
       getaccount();
-    }, );
+    }, [web3, contract]);
 
     useEffect(() => { // 初始 render
       getDelivery();
@@ -211,17 +215,17 @@ export default function ActionPage(props) {
         getLocation();
       }, [clientLatitude, clientLongitude]);
     
-    const orderlist = []
-    const listOrder = orderlist.map((order) => {
-        return (
-            <div>
-                <ListItem>
-                    My order
-                </ListItem>
-                <ListItemText primary={order} />
-            </div>
-        );
-    });
+    // const orderlist = []
+    // const listOrder = orderlist.map((order) => {
+    //     return (
+    //         <div>
+    //             <ListItem>
+    //                 My order
+    //             </ListItem>
+    //             <ListItemText primary={order} />
+    //         </div>
+    //     );
+    // });
 
     return(
         <Layout>
@@ -230,7 +234,7 @@ export default function ActionPage(props) {
         <Header
             absolute
             color= {anchorElBottom? "transparent" : "white"}
-            brand="Your meal is coming..."
+            brand={mealMessage}
             fixed
             rightLinks={<MyHeaderLinks />}
             {...rest}
@@ -238,6 +242,7 @@ export default function ActionPage(props) {
         <Content style={{ margin: '0px 0px 0px' }}>
         <Button
             id="receiveMeal"
+            disabled={!(mealArrived)}
             onClick={() => {
                       getFoodImage();
                       showModal();
@@ -267,7 +272,10 @@ export default function ActionPage(props) {
               </Link>
                 ]}
               >   
+              {(imageHash)?
               <p className="text-center"><img src={`https://ipfs.infura.io/ipfs/${imageHash}`} /></p>
+              :<p className="text-center">Sorry, no picture</p>
+              }
                   <Form
                       name="validate_other"
                       {...formItemLayout}

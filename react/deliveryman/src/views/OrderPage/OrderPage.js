@@ -182,17 +182,19 @@ export default function OrderPage(props) {
                 </>
               : <p>No item</p>
             }
-            <Link to="/confirmDelivery">
-              <Button 
-              size="sm" 
-              color="success" 
-              // href="http://localhost:3000/confirmDelivery"
-              onClick={() =>
-              {
-                setUpOrder(num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs);
-                resetOrder();
-                }} disabled={!costs}> send my order </Button>
-            </Link>  
+            <Button 
+            size="sm" 
+            color="success" 
+            // href="http://localhost:3000/confirmDelivery"
+            onClick={() =>
+            {
+            setUpOrder(num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs);
+            resetOrder();
+            }} disabled={!costs}> 
+            <Link to="/confirmDelivery" style={{color:"white"}}>
+            send my order
+            </Link>
+            </Button>
             <Button size="sm" color="rose" onClick={resetOrder}>reset</Button>
             <Button size="sm" onClick={onClose}>cancel</Button>
             </Drawer>
