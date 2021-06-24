@@ -151,6 +151,7 @@ export default function ActionPage(props) {
 
     const getFoodImage = async () => {
       if (mealArrived){
+        console.log("mealArrived", mealArrived)
         var Hash = await contract.methods.GetImageHash().call({from: clientAddr})
         console.log("Hash", Hash)
         setImageHash(Hash)
@@ -273,7 +274,7 @@ export default function ActionPage(props) {
                 ]}
               >   
               {(imageHash)?
-              <p className="text-center"><img src={`https://ipfs.infura.io/ipfs/${imageHash}`} /></p>
+              <p className="text-center"><img width="150px" src={`https://ipfs.infura.io/ipfs/${imageHash}`} /></p>
               :<p className="text-center">Sorry, no picture</p>
               }
                   <Form
@@ -283,6 +284,7 @@ export default function ActionPage(props) {
                       initialValues={{
                       rate: 0,
                       }}
+                      // style={{align:"center"}}
                   >
                   <Form.Item name="rate" label="Rate">
                       <Rate                                 
