@@ -1,4 +1,6 @@
 import React, {useState, useEffect, useRef} from "react";
+import '../view.css';
+import 'ant-design-icons/dist/anticons.min.css'
 import {Link} from "react-router-dom";
 import faker from "faker";
 import loader from 'api/map'
@@ -22,6 +24,7 @@ import Person from "@material-ui/icons/Person";
 import Home from "@material-ui/icons/Home";
 import Phone from "@material-ui/icons/Phone";
 import Fastfood from "@material-ui/icons/Fastfood";
+import {Form, Rate, Modal, Layout, Menu } from 'antd';
 // core components
 import Header from "components/Header/Header.js";
 import MyHeaderLinks from "components/Header/MyHeaderLink.js";
@@ -42,6 +45,7 @@ import styles from "assets/jss/material-kit-react/views/actionPage.js";
 import { Keyboard } from "@material-ui/icons";
 
 const useStyles = makeStyles(styles);
+const {Content, Sider} = Layout;
 
 export default function ActionPage(props) {
     const classes = useStyles();
@@ -58,6 +62,12 @@ export default function ActionPage(props) {
     const [phone, setPhone] = useState("");
     const [restaurant, setRestaurant] = useState("")
     const [total, setTotal] = useState(0);
+    const [clientLatitude, setClientLatitude] = useState(0);
+    const [clientLongitude, setClientLongitude] = useState(0);
+    const [deliveryLatitude, setDeliveryLatitude] = useState(0);
+    const [deliveryLongitude, setDeliveryLongitude] = useState(0);
+    const [restaurantLatitude, setRestaurantLatitude] = useState(0);
+    const [restaurantLongitude, setRestaurantLongitude] = useState(0);
 
 
     // customer side function
@@ -76,6 +86,11 @@ export default function ActionPage(props) {
         
     });
 
+    useEffect(() => { // 初始 render
+        getLocation();
+      }, [deliveryLatitude, deliveryLongitude]); 
+
+
     const getaccount = async () => {
         if(web3 !== null){
             const accountresult = await web3.eth.getAccounts();
@@ -92,6 +107,69 @@ export default function ActionPage(props) {
             });
         });
     };
+
+    loader.load().then(() => {
+        const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度，假裝是餐廳
+        const map = new google.maps.Map(document.getElementById("mapDelivery"), {
+          center: { lat: latlng.lat, lng: latlng.lng },
+          zoom: 12,
+        });
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer({ map: map });
+        calculateAndDisplayRoute(directionsService, directionsRenderer);
+
+        var iconHome = {
+            url: "https://imgur.com/Q2KsdLh.jpg", // url
+            scaledSize: new google.maps.Size(40, 40), // size
+        };
+
+        var iconDelivery = {
+            url: 'https://imgur.com/tYsXNec.jpg',
+            scaledSize: new google.maps.Size(40, 40), // size
+          };
+      
+          var iconRestaurant = {
+            url: 'https://imgur.com/7Fjvw6D.jpg',
+            scaledSize: new google.maps.Size(40, 40), // size
+          };
+        // 餐廳 marker
+        var marker = new google.maps.Marker({
+            position: { lat: restaurantLatitude, lng: restaurantLongitude },
+            icon: iconRestaurant,
+            map: map
+        });
+        
+        // 外送員 marker
+        var marker = new google.maps.Marker({
+            position: { lat: deliveryLatitude, lng: deliveryLongitude },
+            icon: iconDelivery,
+            map: map
+        });
+
+        // 顧客 marker
+        var marker = new google.maps.Marker({
+            position: { lat: clientLatitude, lng: clientLongitude },
+            icon: iconHome,
+            map: map
+        });
+
+      });
+
+      const getLocation = () => {
+        if (navigator.geolocation) {
+          console.log("get position")
+          navigator.geolocation.getCurrentPosition(setPosition);
+        } else {
+          console.log( "Geolocation is not supported by this browser")
+        }
+      }
+    
+    const setPosition = (position) => {
+        setDeliveryLatitude(position.coords.latitude)
+        setDeliveryLongitude(position.coords.longitude)
+        console.log("Latitude: " + deliveryLatitude)
+        console.log("Longitude: " + deliveryLongitude)
+      }
 
     const calculateAndDisplayRoute = (directionsService, directionsRenderer) => {
         directionsService.route(
@@ -146,6 +224,9 @@ export default function ActionPage(props) {
             setTotal(result1[4]);
             setOrderName(Object.values(result2));
 
+            geocode(result1[3], setRestaurantLatitude, setRestaurantLongitude);
+            setClientLatitude(25);
+            setClientLongitude(121.5);
             // console.log(orderResult);
             // console.log(orderName);
             // console.log(realAddress, phone, total);
@@ -177,27 +258,25 @@ export default function ActionPage(props) {
     });
 
     return(
-        <div>
+        // <div>
+        <Layout>
+        <br></br>
+        <br></br>
             <Header
                 absolute
-                color= {anchorElBottom? "transparent" : "white"}
+                // color= {anchorElBottom? "transparent" : "white"}
+                color= "white"
                 brand="Start delivery"
                 rightLinks={<MyHeaderLinks />}
+                // style={{zIndex:"2"}}
             {...rest}
             />
-            <div
-                className={classes.pageHeader}
-                style={{
-                backgroundImage: "url(" + mapimage + ")",
-                backgroundSize: "cover",
-                backgroundPosition: "top center",
-                }}
-            >
-            {/* <div id="map" style={{height:"100%", width:"100%"}}></div> */}
-                <div className={classes.container}>
+            <Content style={{ margin: '0px 0px 0px' }}>
+                {/* <div className={classes.container}> */}
                     <GridContainer>
                         <GridItem xs={12} sm={8} md={4}>
-                        <Button 
+                        {/* <Button 
+                            id="match"
                             onClick={event => setUpMatch()}
                             color="primary" 
                             size="lg"
@@ -205,19 +284,33 @@ export default function ActionPage(props) {
                             Match
                         </Button>  
                         <Button 
+                            id="order"
                             onClick={event => setUpOrder()}
                             color="primary" 
                             size="lg"
                             >
                             Order
-                        </Button> 
+                        </Button>  */}
+                        {customerAddr? 
                         <Button 
-                            onClick={event => {setAnchorElBottom(event.currentTarget); getDeliverDetail();}}
-                            color="info" 
-                            size="lg"
-                            >
+                        id="startDelivery"
+                        onClick={event => {setAnchorElBottom(event.currentTarget); getDeliverDetail();}}
+                        color="info" 
+                        size="lg"
+                        >
                             Start Deliver
                         </Button>
+                        :
+                        <Button 
+                            id="startDelivery"
+                            color="info" 
+                            size="lg"
+                            disabled
+                        >
+                            Start Deliver
+                        </Button>
+                        }
+                        
                         <Popover
                             classes={{
                             paper: classes.popover
@@ -327,12 +420,12 @@ export default function ActionPage(props) {
                         
                         </GridItem>
                     </GridContainer>
-                </div>
-            
-            </div>
-
-            
-        </div>
+                {/* </div> */}
+                <br></br>  
+                <div id="mapDelivery"></div>
+            </Content>
+        </Layout>
+        /* </div> */
 
     );
 }

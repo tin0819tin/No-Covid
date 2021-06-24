@@ -12,7 +12,14 @@
     position:absolute;
     /* top: 135px; left: 0px; */
     z-index: 1;
-   }
+}
+
+#mapDelivery {
+    height: 600px;
+    width: 100%;
+    position:absolute;
+    z-index: 1;
+}
 
 #mapConfirmDelivery {
     height: 400px;
@@ -22,5 +29,23 @@
 #receiveMeal {
     position:absolute;
     top: 120px; left: 12px;
+    z-index: 2;
+}
+
+#match {
+    position:absolute;
+    top: 240px; left: 50px;
+    z-index: 2;
+}
+
+#order {
+    position:absolute;
+    top: 180px; left: 50px;
+    z-index: 2;
+}
+
+#startDelivery {
+    position:absolute;
+    top: 120px; left: 50px;
     z-index: 2;
 }

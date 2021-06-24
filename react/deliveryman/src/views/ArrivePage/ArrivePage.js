@@ -88,7 +88,7 @@ export default function ArrivePage(props) {
         // if(confirm === true){
         //     const result = await contract.methods.UploadDeliveryHistory(realAdress).send({from: account});
         // }
-        contract.methods.UploadDeliveryHistory(realAdress).send({from: account});
+        contract.methods.FinishMatch(customerAddr, realAdress).send({from: account});
     }
 
     const classes = useStyles();
@@ -118,13 +118,15 @@ export default function ArrivePage(props) {
             </div>
             <GridContainer justify="center">
                 <GridItem xs={12} sm={12} md={1} className={classes_2.grid}>
-                    <Button 
-                        onClick={() => { console.log(realAdress); uploadDeliveryHistory();}}
-                        color="success" 
-                        size="lg"
-                        >
-                        Done
-                    </Button>
+                    <Link to='/action'> 
+                        <Button 
+                            onClick={() => { console.log(realAdress); uploadDeliveryHistory();}}
+                            color="success" 
+                            size="lg"
+                            >
+                            Done
+                        </Button>
+                    </Link>
                     <script></script>
                 </GridItem>
                 
