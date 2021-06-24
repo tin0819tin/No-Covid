@@ -20,7 +20,6 @@ import Button from 'components/CustomButtons/Button.js';
 import CustomInput from "components/CustomInput/CustomInput.js";
 import styles1 from "assets/jss/material-kit-react/views/landingPageSections/productStyle.js";
 import styles2 from "assets/jss/material-kit-react/views/landingPage.js";
-import InputAdornment from "@material-ui/core/InputAdornment";
 import { Drawer, Input} from 'antd';
 
 // images
@@ -40,7 +39,7 @@ export default function OrderPage(props) {
   const {web3, contract, ...rest} = props;
   const dessert_width = "200";
   const dessert_height = "300";
-  const [clientAddr, setClientAddr] = useState("0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5");
+  const [clientAddr, setClientAddr] = useState("");
   const [num_chocolate_cake, setNum_chocolate_cake] = useState(0);
   const [num_cupcake, setNum_cupcake] = useState(0);
   const [num_ice_cream, setNum_ice_cream] = useState(0);

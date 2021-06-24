@@ -11,6 +11,8 @@ import MyHeaderLinks from "components/Header/MyHeaderLink.js";
 import Footer from "components/Footer/Footer.js";
 import Button from "components/CustomButtons/Button.js";
 import {Form, Rate, Modal, Layout, Menu } from 'antd';
+// IPFS Client
+import {create} from 'ipfs-http-client';
 
 const {Content, Sider} = Layout;
 
@@ -37,6 +39,8 @@ export default function ActionPage(props) {
     const [clientLongitude, setLongitude] = useState(0);
     // const [deliveryLocation, setDeliveryLocation] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [imageHash, setImageHash] = useState("");
+    const [mealArrived, setMealArrived] = useState(false);
 
     loader.load().then(() => {
         const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度
@@ -46,14 +50,31 @@ export default function ActionPage(props) {
           zoom: 12,
         });
 
-        var iconRestaurant = {
-          url: "https://cdn3.iconfinder.com/data/icons/map-markers-1/512/cafe-512.png", // url
+        var iconHome = {
+          url: "https://imgur.com/Q2KsdLh.jpg", // url
           scaledSize: new google.maps.Size(30, 30), // size
       };
-        var iconHome = {
-          url: "https://i0.wp.com/cdn3.iconfinder.com/data/icons/pin-4/100/pin-512.png?resize=650,400", // url
-          scaledSize: new google.maps.Size(40, 30), // size
+    
+        var iconDanger = {
+          url: 'https://imgur.com/CTZIgOo.jpg', // url
+          scaledSize: new google.maps.Size(30, 30), // size
       };
+    
+        var iconSafe = {
+          url: 'https://imgur.com/uRsoHo7.jpg',
+          scaledSize: new google.maps.Size(30, 30), // size
+      };
+    
+        var iconDelivery = {
+          url: 'https://imgur.com/tYsXNec.jpg',
+          scaledSize: new google.maps.Size(30, 30), // size
+        };
+    
+        var iconRestaurant = {
+          url: 'https://imgur.com/7Fjvw6D.jpg',
+          scaledSize: new google.maps.Size(30, 30), // size
+        };
+
         var marker = new google.maps.Marker({
             position: latlng,
             icon: iconRestaurant,
@@ -82,26 +103,21 @@ export default function ActionPage(props) {
         console.log("Latitude: " + clientLatitude)
         console.log("Longitude: " + clientLongitude)
       }
-    
-    const getCustomAddr = () => {
-        const result = contract.methods.GetMatchedCutomer().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'})
-        console.log(result);
-    };
 
-    const getDeliverDetail = () => {
-        if(customerAddr !== ""){
-            const result1 = contract.methods.GetOrderByAddress(customerAddr).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
-            const result2 = contract.methods.GetProduct().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
+    // const getDeliverDetail = () => {
+    //     if(customerAddr !== ""){
+    //         const result1 = contract.methods.GetOrderByAddress(customerAddr).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
+    //         const result2 = contract.methods.GetProduct().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
             
-            console.log(result1, result2);
+    //         console.log(result1, result2);
 
-            setOrderResult(result1[0].map( num =>  num.toNumber() ));
-            setRealAddress(result[1]);
-            setPhone(result1[2]);
-            setTotal(result1[3]);
-            setOrderName(result2[0].map(name => name.toString() ));
-        }
-    };
+    //         setOrderResult(result1[0].map( num =>  num.toNumber() ));
+    //         setRealAddress(result[1]);
+    //         setPhone(result1[2]);
+    //         setTotal(result1[3]);
+    //         setOrderName(result2[0].map(name => name.toString() ));
+    //     }
+    // };
 
     const getDelivery = async () => {
       if(web3 !== null && contract !== null){
@@ -168,6 +184,21 @@ export default function ActionPage(props) {
       }    
     }
 
+    const getFoodImage = async () => {
+      if (mealArrived){
+        var Hash = await contract.methods.GetImageHash().call({from: clientAddr})
+        console.log("Hash", Hash)
+        setImageHash(Hash)
+    }
+    }
+
+    const getMealArrived = async () => {
+      if (mealArrived){
+        var mealStatus = await contract.methods.OrderArrive().call({from: clientAddr})
+        console.log("mealStatus", mealStatus)
+    }
+    }
+
     useEffect(() => { // 初始 render
       getaccount();
     }, );
@@ -208,6 +239,7 @@ export default function ActionPage(props) {
         <Button
             id="receiveMeal"
             onClick={() => {
+                      getFoodImage();
                       showModal();
                   }}
                   color="info" 
@@ -231,10 +263,11 @@ export default function ActionPage(props) {
                   size="sm"
                   >
                   DONE
-              </Button>
+                </Button>
               </Link>
                 ]}
-              >
+              >   
+              <p className="text-center"><img src={`https://ipfs.infura.io/ipfs/${imageHash}`} /></p>
                   <Form
                       name="validate_other"
                       {...formItemLayout}

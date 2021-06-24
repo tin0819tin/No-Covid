@@ -31,7 +31,7 @@ export default function ConfirmDeliveryPage(props) {
   );
   // const navImageClasses = classNames(classes.imgRounded, classes.imgGallery);
   const [clientAddr, setClientAddr] = useState("0x5d3FCad0098AAA8821E934479A8fCC056F32c8D5");
-  const [deliveryAddr, setDeliveryAddr] = useState("0x97D40c60E86De40b75Dd703cD117eb92Fbc8536c");
+  const [deliveryAddr, setDeliveryAddr] = useState("");
   const [deliveryIndex, setDeliveryIndex] = useState(0);
   const [FirstName, setFirstName] = useState("Wesly");
   const [LastName, setLastName] = useState("Hsieh");
@@ -55,13 +55,48 @@ export default function ConfirmDeliveryPage(props) {
       zoom: 12,
     });
 
-    const marker = new google.maps.Marker({
-      position: latlng,
-      // animation: google.maps.Animation.BOUNCE,
-      // label: 'restaurant',
-      icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+    var iconHome = {
+      url: "https://imgur.com/Q2KsdLh.jpg", // url
+      scaledSize: new google.maps.Size(30, 30), // size
+  };
+
+    var iconDanger = {
+      url: 'https://imgur.com/CTZIgOo.jpg', // url
+      scaledSize: new google.maps.Size(30, 30), // size
+  };
+
+    var iconSafe = {
+      url: 'https://imgur.com/uRsoHo7.jpg',
+      scaledSize: new google.maps.Size(30, 30), // size
+  };
+
+    var iconDelivery = {
+      url: 'https://imgur.com/tYsXNec.jpg',
+      scaledSize: new google.maps.Size(30, 30), // size
+    };
+
+    var iconRestaurant = {
+      url: 'https://imgur.com/7Fjvw6D.jpg',
+      scaledSize: new google.maps.Size(30, 30), // size
+    };
+
+    var marker = new google.maps.Marker({
+      position: { lat: clientLatitude, lng: clientLongitude },
+      icon: iconHome,
       map: map
   });
+
+    var marker = new google.maps.Marker({
+      position: latlng,
+      icon: iconDanger,
+      map: map
+  });
+
+  //   var marker = new google.maps.Marker({
+  //     position: latlng,
+  //     icon: iconSafe,
+  //     map: map
+  // });
   });
 
   const getLocation = () => {
@@ -107,13 +142,8 @@ export default function ConfirmDeliveryPage(props) {
           }
         }
         setDeliveryInfo(deliveryList_can_match)
-        console.log(deliveryList_can_match)
-        // initial deliveryMan
-
-        setDeliveryAddr(deliveryList_can_match[0])
+        console.log("deliveryList_can_match", deliveryList_can_match)
         // test
-        contract.methods.UploadHealthStatus("ethen", "tsao", "ss", "099", true, true, true, true).send({from: deliveryList[0]})
-        contract.methods.UploadHealthStatus("ethe", "tso", "s", "99", true, true, true, true).send({from: deliveryList[1]})
         console.log("there are", deliveryList_can_match.length, "available delivery men")
       }else{
         console.log("web3 or contract is null");
@@ -131,21 +161,25 @@ export default function ConfirmDeliveryPage(props) {
     console.log(deliveryIndex, "/", deliveryInfo.length)
     if(deliveryIndex < deliveryInfo.length) {
       // set delivery address
-      setDeliveryAddr(deliveryInfo[deliveryIndex])
-      console.log(deliveryAddr, "=", deliveryInfo[deliveryIndex])
-      // get delivery health status
-      const deliveryHealth = await contract.methods.GetHealthStatus(deliveryAddr).call({from: clientAddr})
-      const deliveryHistory = await contract.methods.GetDeliverHistory(deliveryAddr).call({from: clientAddr})
-      // console.log("deliveryHistory", deliveryHistory)
+      // console.log(deliveryAddr, "=", deliveryInfo[deliveryIndex])
+      const deliveryAddrTemp = deliveryInfo[deliveryIndex]
+      console.log("deliveryAddrTemp", deliveryAddrTemp)
+      // // get delivery health status
+      const deliveryHealth = await contract.methods.GetHealthStatus(deliveryAddrTemp).call({from: clientAddr})
+      const deliveryHistory = await contract.methods.GetDeliverHistory(deliveryAddrTemp).call({from: clientAddr})
       var scores = []
+      var scoresAvg = 0
       for(let i=0; i<deliveryHealth[8].length; i++){
         scores.push(parseInt(deliveryHealth[8][i]));
+        scoresAvg += parseInt(deliveryHealth[8][i])
       }
-      console.log(scores)
+      if(scores.length > 0){
+        scoresAvg /= deliveryHealth[8].length
+      }
       console.log("deliveryHealth", deliveryHealth)
-      // get delivery match status
-      const deliveryMatch = await contract.methods.GetMatchedCustomer().call({from: deliveryAddr})
-      console.log("deliveryMatch", deliveryMatch)
+      console.log("deliveryHistory", deliveryHistory)
+
+      setDeliveryAddr(deliveryAddrTemp)
       setFirstName(deliveryHealth[0]);
       setLastName(deliveryHealth[1]);
       setEmail(deliveryHealth[2]);
@@ -154,7 +188,10 @@ export default function ConfirmDeliveryPage(props) {
       setotherSymptom(deliveryHealth[5]);
       setContact(deliveryHealth[6]);
       setSymptom(deliveryHealth[7]);
-      setScore(deliveryHealth[8]);
+      setScore(scoresAvg);
+      setDeliveryIndex(deliveryIndex + 1);
+    }else{
+      console.log(" no available delivery men")
     }
   }
 
@@ -168,11 +205,18 @@ export default function ConfirmDeliveryPage(props) {
 
   useEffect(() => { // 初始 render
     getDelivery();
-    chooseNotDelivery();
+    // chooseNotDelivery();
     if (confirm === null ){
       comfirmGeolocation();
   }
   }, [web3, contract]);
+
+  useEffect(() => { // 初始 render
+    if(deliveryInfo.length !== 0){
+      // for the first delivery
+      chooseNotDelivery();
+    }
+  }, [deliveryInfo]);
 
   return (
     <div>
@@ -199,11 +243,11 @@ export default function ConfirmDeliveryPage(props) {
               <GridItem xs={12} sm={12} md={6}>
                 <div className={classes.profile}>
                   <div>
-                    <img src={profile} alt="..." className={imageClasses} />
+                    <img src={"https://img.88icon.com/download/jpg/20200902/7a76bdc81863c456fa4355fc9cd09b4f_512_512.jpg!88bg"} alt="..." className={imageClasses} />
                   </div>
                   <div className={classes.name}>
                     <h3 className={classes.title}>{FirstName}</h3>
-                    <h6>Delivery ID: {}</h6>
+                    <h6>Delivery ID: {deliveryAddr}</h6>
                   </div>
                 </div>
               </GridItem>
@@ -244,8 +288,8 @@ export default function ConfirmDeliveryPage(props) {
             color="rose"
             onClick ={()=> {
               chooseNotDelivery();
-              setDeliveryIndex(deliveryIndex + 1);
             }}
+            disabled={!(deliveryIndex < deliveryInfo.length)}
             > Change another delivery man </Button>
             &nbsp;
             <Link to="/order">
@@ -259,7 +303,12 @@ export default function ConfirmDeliveryPage(props) {
           </div>
         </div>
       </div>
-      <Footer />
+      <Button
+      onClick={()=>{
+        contract.methods.UploadHealthStatus("ethen", "tsao", "ss", "099", true, true, true, true).send({from: "0xC387D16bC14851DC14f707B08d567bFD633545B3"})
+      }
+      }></Button>
+      {/* <Footer /> */}
     </div>
   );
 }
