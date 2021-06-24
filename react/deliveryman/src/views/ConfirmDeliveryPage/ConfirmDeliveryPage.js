@@ -263,7 +263,7 @@ export default function ConfirmDeliveryPage(props) {
                     {!(deliveryInfo.length)?
                     <>
                       <h3 className={classes.title}>No available delivery man</h3>
-                      <h6>Wait for a while and fresh this page later</h6>
+                      <h6>Wait for a while and refresh this page later</h6>
                     </>
                     :
                     <>
