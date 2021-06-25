@@ -10,6 +10,7 @@ import classNames from "classnames";
 import { makeStyles } from "@material-ui/core/styles";
 // core components
 import Header from "components/Header/Header.js";
+import MyHeaderLinks from "components/Header/MyHeaderLink.js";
 import Footer from "components/Footer/Footer.js";
 import Button from "components/CustomButtons/Button.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -198,11 +199,31 @@ export default function ConfirmDeliveryPage(props) {
       setLastName(deliveryHealth[1]);
       setEmail(deliveryHealth[2]);
       setPhone(deliveryHealth[3]);
-      setTravelOrNot(deliveryHealth[4]);
-      setotherSymptom(deliveryHealth[5]);
-      setContact(deliveryHealth[6]);
-      setSymptom(deliveryHealth[7]);
-      setScore(scoresAvg);
+      if(deliveryHealth[4]){
+        setTravelOrNot("True");
+      }else{
+        setTravelOrNot("False");
+      }
+      if(deliveryHealth[5]){
+        setotherSymptom("True");
+      }else{
+        setotherSymptom("False");
+      }
+      if(deliveryHealth[6]){
+        setContact("True");
+      }else{
+        setContact("False");
+      }
+      if(deliveryHealth[7]){
+        setSymptom("True");
+      }else{
+        setSymptom("False");
+      }
+      if(scores.length > 0){
+        setScore(scoresAvg);
+      }else{
+        setScore("No Data");
+      }
       setDeliveryIndex(deliveryIndex + 1);
     }else{
       console.log(" no available delivery men")
@@ -237,7 +258,7 @@ export default function ConfirmDeliveryPage(props) {
       <Header
         color="transparent"
         brand="Welcome to No-Covid"
-        rightLinks={<HeaderLinks />}
+        rightLinks={<MyHeaderLinks />}
         fixed
         changeColorOnScroll={{
           height: 200,
@@ -338,7 +359,7 @@ export default function ConfirmDeliveryPage(props) {
       <Button
       onClick={()=>{
         console.log(confirm)
-        contract.methods.UploadHealthStatus("co", "tsao", "ss", "09", true, true, true, true).send({from: "0x6F69116D643EDc78D917Cd4BFa6a4e847F210b1D"})
+        contract.methods.UploadHealthStatus("co", "tsao", "ss", "09", true, true, true, true).send({from: "0x5108f6abF7464d70c59147De5333C9a0faF70677"})
       }
       }></Button>
       <Button
