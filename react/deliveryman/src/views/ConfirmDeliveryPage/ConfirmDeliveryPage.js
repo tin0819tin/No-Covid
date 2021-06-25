@@ -193,7 +193,6 @@ export default function ConfirmDeliveryPage(props) {
       console.log(confirm)
       console.log("deliveryHealth", deliveryHealth)
       console.log("deliveryHistory", deliveryHistory)
-
       setDeliveryAddr(deliveryAddrTemp)
       setFirstName(deliveryHealth[0]);
       setLastName(deliveryHealth[1]);

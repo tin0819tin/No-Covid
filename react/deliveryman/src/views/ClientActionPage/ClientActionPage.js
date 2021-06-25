@@ -103,21 +103,6 @@ export default function ActionPage(props) {
         console.log("Longitude: " + clientLongitude)
       }
 
-    // const getDeliverDetail = () => {
-    //     if(customerAddr !== ""){
-    //         const result1 = contract.methods.GetOrderByAddress(customerAddr).send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
-    //         const result2 = contract.methods.GetProduct().send({from: '0x03787c28627DFE33BbC357029Ef9e28C9039e62A'});
-            
-    //         console.log(result1, result2);
-
-    //         setOrderResult(result1[0].map( num =>  num.toNumber() ));
-    //         setRealAddress(result[1]);
-    //         setPhone(result1[2]);
-    //         setTotal(result1[3]);
-    //         setOrderName(result2[0].map(name => name.toString() ));
-    //     }
-    // };
-
     const getaccount = async () => {
       console.log(web3, contract)
       if(web3 !== null && contract !== null){
@@ -195,7 +180,7 @@ export default function ActionPage(props) {
       if(web3 !== null && contract !== null && clientAddr !== "" && mealArrived !== true){
         var mealStatus = await contract.methods.OrderArrive().call({from: clientAddr})
         console.log("mealStatus", mealStatus)
-        mealStatus = true
+        // mealStatus = true
         if(mealStatus === true){
           setMealArrived(true)
           setMealMessage("Your Meal is Arrived!!!")
