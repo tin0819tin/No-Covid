@@ -46,7 +46,7 @@ export default function ConfirmDeliveryPage(props) {
   const [deliveryInfo, setDeliveryInfo] = useState([]);
   const [clientLatitude, setLatitude] = useState(0);
   const [clientLongitude, setLongitude] = useState(0);
-  const [confirm, setConfirm] = useState(false);
+  const [confirm, setConfirm] = useState(null);
   const [confirmList, setConfirmList] = useState(null);
   const [deliveryLocation, setDeliveryLocation] = useState([]);
 
@@ -83,29 +83,43 @@ export default function ConfirmDeliveryPage(props) {
       scaledSize: new google.maps.Size(30, 30), // size
     };
 
-    var marker = new google.maps.Marker({
+    var data = [
+      {
       position: { lat: clientLatitude, lng: clientLongitude },
       icon: iconHome,
       map: map
-    });
-
-    var marker = new google.maps.Marker({
-      position: latlng,
-      icon: iconDanger,
-      map: map
-    });
-
-  //   var marker = new google.maps.Marker({
-  //     position: latlng,
-  //     icon: iconSafe,
-  //     map: map
-  // });
-
-    var marker = new google.maps.Marker({
+      },
+      {
       position: latlng,
       icon: iconRestaurant,
       map: map
-  });
+    }]
+    // var confirmList = [true, false]
+    // var deliveryLocation = [[25.014947, 121.535549], [25.175437, 121.432936]]
+    if(confirmList !== null){
+      for (let i = 0; i < confirmList.length; i++) {
+        console.log(deliveryLocation[i][0])
+        const location = { lat: deliveryLocation[i][0], lng: deliveryLocation[i][1] }
+        if(confirmList[i]){
+          data.push({
+            position: location,
+            icon: iconDanger,
+            map: map
+          });
+        }else{
+          data.push({
+            position: location,
+            icon: iconSafe,
+            map: map
+        });
+        }
+      }
+    }
+    console.log(data)
+    for (let i= 0; i < data.length ; i++) {
+      console.log(data[i])
+      var marker = new google.maps.Marker(data[i]);
+    }
   });
 
   const getLocation = () => {
@@ -186,11 +200,20 @@ export default function ConfirmDeliveryPage(props) {
       if(scores.length > 0){
         scoresAvg /= deliveryHealth[8].length
       }
+      var confirmListTemp = []
+      var deliveryLocationTemp = []
       for(let i=0; i<deliveryHistory.length; i++){
+        deliveryLocationTemp.push(deliveryHistory[i])
         geolocation(deliveryHistory[i], setConfirm);
+        if(confirm){
+          confirmListTemp.push(true)
+        }else{
+          confirmListTemp.push(false)
+        }
       }
-      comfirmGeolocation()
-      console.log(confirm)
+      setConfirmList(confirmListTemp)
+      setDeliveryLocation(deliveryLocationTemp)
+      // console.log(confirm, "confirm")
       console.log("deliveryHealth", deliveryHealth)
       console.log("deliveryHistory", deliveryHistory)
       setDeliveryAddr(deliveryAddrTemp)
@@ -231,7 +254,7 @@ export default function ConfirmDeliveryPage(props) {
 
   useEffect(() => { // 初始 render
     getLocation();
-  }, [clientLatitude, clientLongitude]);
+  }, [clientLatitude, clientLongitude, confirmList, deliveryLocation]);
 
   useEffect(() => { // 初始 render
     getaccount();

@@ -200,18 +200,6 @@ export default function ActionPage(props) {
     useEffect(() => { // 初始 render
         getLocation();
       }, [clientLatitude, clientLongitude]);
-    
-    // const orderlist = []
-    // const listOrder = orderlist.map((order) => {
-    //     return (
-    //         <div>
-    //             <ListItem>
-    //                 My order
-    //             </ListItem>
-    //             <ListItemText primary={order} />
-    //         </div>
-    //     );
-    // });
 
     return(
         <Layout>

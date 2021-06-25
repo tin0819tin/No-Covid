@@ -27,8 +27,8 @@ export const geolocation = (address, setConfirm) => (loader.loadCallback(() => {
                         for (let data of results.data){
                             if (result(data["latitude"], data["longitude"])){
                                 console.log(data["latitude"], data["longitude"]);
-                                // setConfirm(true);
-                                return true
+                                setConfirm(true);
+                                // return true
                                 break;
                             }
                         }
