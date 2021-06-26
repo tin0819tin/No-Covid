@@ -98,21 +98,24 @@ export default function ConfirmDeliveryPage(props) {
       console.log(confirmList.length, confirmList, deliveryLocationList.length, deliveryLocationList)
       if(confirmList.length !== 0 && deliveryLocationList.length !== 0){
       for (let i = 0; i < confirmList.length; i++) {
-        console.log("deliveryLocation:", deliveryLocationList[i], "confirmList", confirmList[i])
-        const location = { lat: deliveryLocationList[i][0], lng: deliveryLocationList[i][1] }
-        if(confirmList[i]){
-          data.push({
-            position: location,
-            icon: iconDanger,
-            map: map
+        if (deliveryLocationList[i] !== undefined && confirmList[i] !== undefined){
+          console.log("deliveryLocation:", deliveryLocationList[i], "confirmList", confirmList[i])
+          const location = { lat: deliveryLocationList[i][0], lng: deliveryLocationList[i][1] }
+          if(confirmList[i]){
+            data.push({
+              position: location,
+              icon: iconDanger,
+              map: map
+            });
+          }else{
+            data.push({
+              position: location,
+              icon: iconSafe,
+              map: map
           });
-        }else{
-          data.push({
-            position: location,
-            icon: iconSafe,
-            map: map
-        });
+          }
         }
+        
       }
     }
     }

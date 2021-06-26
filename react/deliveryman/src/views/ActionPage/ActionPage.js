@@ -269,7 +269,7 @@ export default function ActionPage(props) {
                 color= "white"
                 brand="Start delivery"
                 rightLinks={<MyHeaderLinks />}
-                // style={{zIndex:"2"}}
+                style={{zIndex:"2"}}
             {...rest}
             />
             <Content style={{ margin: '0px 0px 0px' }}>
