@@ -380,7 +380,7 @@ export default function ConfirmDeliveryPage(props) {
           </div>
         </div>
       </div>
-      <Button
+      {/* <Button
       onClick={()=>{
         console.log(confirm)
         contract.methods.UploadHealthStatus("co", "tsao", "ss", "09", true, true, true, true).send({from: "0x5108f6abF7464d70c59147De5333C9a0faF70677"})
@@ -397,7 +397,7 @@ export default function ConfirmDeliveryPage(props) {
         // contract.methods.FinishMatch("0x5108f6abF7464d70c59147De5333C9a0faF70677", "No. 16-1, Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan").send({from: "0x5108f6abF7464d70c59147De5333C9a0faF70677"})
         contract.methods.FinishMatch("0x5108f6abF7464d70c59147De5333C9a0faF70677", "No.16, Sec. 2, Zhongshan N. Rd., Zhongshan Dist., Taipei City 104, Taiwan (R.O.C.)").send({from: "0x5108f6abF7464d70c59147De5333C9a0faF70677"})
       }
-      }></Button>
+      }></Button> */}
       {/* <Footer /> */}
     </div>
   );
