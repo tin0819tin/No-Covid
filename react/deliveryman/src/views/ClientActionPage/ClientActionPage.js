@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, Component} from "react";
+import React, {useState, useEffect} from "react";
 import '../view.css';
 import 'ant-design-icons/dist/anticons.min.css'
 import loader from "../../api/map";
@@ -12,11 +12,9 @@ import Footer from "components/Footer/Footer.js";
 import Button from "components/CustomButtons/Button.js";
 import {Form, Rate, Modal, Layout, Menu } from 'antd';
 // IPFS Client
-import {create} from 'ipfs-http-client';
 
-const {Content, Sider} = Layout;
+const {Content} = Layout;
 
-import mapimage from "../../assets/img/map.jpg";
 import styles from "assets/jss/material-kit-react/views/actionPage.js";
 
 const useStyles = makeStyles(styles);
@@ -26,16 +24,10 @@ export default function ActionPage(props) {
     const {web3, contract, ...rest} = props;
     const [anchorElBottom, setAnchorElBottom] = useState(null);
     const [clientAddr, setClientAddr] = useState("");
-    const [deliveryAddr, setDeliveryAddr] = useState("0x97D40c60E86De40b75Dd703cD117eb92Fbc8536c");
-    const [orderName, setOrderName] = useState([]);
-    const [orderResult, setOrderResult] = useState([]);
-    const [realAddress, setRealAddress] = useState("");
-    const [phone, setPhone] = useState("");
-    const [total, setTotal] = useState(0);
+    const [deliveryAddr, setDeliveryAddr] = useState("");
     const [deliveryRate, setDeliveryRateRate] = useState(0);
     const [clientLatitude, setLatitude] = useState(0);
     const [clientLongitude, setLongitude] = useState(0);
-    // const [deliveryLocation, setDeliveryLocation] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [imageHash, setImageHash] = useState("");
     const [mealArrived, setMealArrived] = useState(false);

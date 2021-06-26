@@ -46,16 +46,14 @@ export default function ConfirmDeliveryPage(props) {
   const [deliveryInfo, setDeliveryInfo] = useState([]);
   const [clientLatitude, setLatitude] = useState(0);
   const [clientLongitude, setLongitude] = useState(0);
-  const [confirm, setConfirm] = useState(null);
   const [confirmList, setConfirmList] = useState(null);
-  const [deliveryLocation, setDeliveryLocation] = useState([]);
+  const [deliveryLocationList, setDeliveryLocationList] = useState(null);
 
+  const mapRender = () => {
   loader.load().then(() => {
-    const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度
-
     const map = new google.maps.Map(document.getElementById("mapConfirmDelivery"), {
       center: { lat: clientLatitude, lng: clientLongitude },
-      zoom: 12,
+      zoom: 11,
     });
 
     var iconHome = {
@@ -90,16 +88,18 @@ export default function ConfirmDeliveryPage(props) {
       map: map
       },
       {
-      position: latlng,
+      position: { lat: 25.017896, lng: 121.532601 },
       icon: iconRestaurant,
       map: map
     }]
-    // var confirmList = [true, false]
-    // var deliveryLocation = [[25.014947, 121.535549], [25.175437, 121.432936]]
-    if(confirmList !== null){
+
+    console.log("deliveryLocationList in map:", deliveryLocationList, "confirmList in map", confirmList)
+    if(confirmList !== null && deliveryLocationList !== null){
+      console.log(confirmList.length, confirmList, deliveryLocationList.length, deliveryLocationList)
+      if(confirmList.length !== 0 && deliveryLocationList.length !== 0){
       for (let i = 0; i < confirmList.length; i++) {
-        console.log(deliveryLocation[i][0])
-        const location = { lat: deliveryLocation[i][0], lng: deliveryLocation[i][1] }
+        console.log("deliveryLocation:", deliveryLocationList[i], "confirmList", confirmList[i])
+        const location = { lat: deliveryLocationList[i][0], lng: deliveryLocationList[i][1] }
         if(confirmList[i]){
           data.push({
             position: location,
@@ -115,12 +115,14 @@ export default function ConfirmDeliveryPage(props) {
         }
       }
     }
-    console.log(data)
+    }
+    console.log("data", data)
     for (let i= 0; i < data.length ; i++) {
       console.log(data[i])
       var marker = new google.maps.Marker(data[i]);
     }
   });
+}
 
   const getLocation = () => {
     if (navigator.geolocation) {
@@ -136,13 +138,6 @@ export default function ConfirmDeliveryPage(props) {
     setLongitude(position.coords.longitude)
     console.log("Latitude: " + clientLatitude)
     console.log("Longitude: " + clientLongitude)
-  }
-
-  const comfirmGeolocation = () => {
-    const restaurant_address = "No. 16-1, Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan"
-    geolocation(restaurant_address, setConfirm);
-    console.log("geolocation", confirm)
-    console.log("geolocation", confirm)
   }
 
   const getaccount = async () => {
@@ -185,10 +180,9 @@ export default function ConfirmDeliveryPage(props) {
     console.log(deliveryIndex, "/", deliveryInfo.length)
     if(deliveryIndex < deliveryInfo.length) {
       // set delivery address
-      // console.log(deliveryAddr, "=", deliveryInfo[deliveryIndex])
       const deliveryAddrTemp = deliveryInfo[deliveryIndex]
       console.log("deliveryAddrTemp", deliveryAddrTemp)
-      // // get delivery health status
+      // get delivery health status
       const deliveryHealth = await contract.methods.GetHealthStatus(deliveryAddrTemp).call({from: clientAddr})
       const deliveryHistory = await contract.methods.GetDeliverHistory(deliveryAddrTemp).call({from: clientAddr})
       var scores = []
@@ -200,22 +194,9 @@ export default function ConfirmDeliveryPage(props) {
       if(scores.length > 0){
         scoresAvg /= deliveryHealth[8].length
       }
-      var confirmListTemp = []
-      var deliveryLocationTemp = []
-      for(let i=0; i<deliveryHistory.length; i++){
-        deliveryLocationTemp.push(deliveryHistory[i])
-        geolocation(deliveryHistory[i], setConfirm);
-        if(confirm){
-          confirmListTemp.push(true)
-        }else{
-          confirmListTemp.push(false)
-        }
-      }
-      setConfirmList(confirmListTemp)
-      setDeliveryLocation(deliveryLocationTemp)
-      // console.log(confirm, "confirm")
-      console.log("deliveryHealth", deliveryHealth)
       console.log("deliveryHistory", deliveryHistory)
+      geolocation(deliveryHistory, setConfirmList, setDeliveryLocationList);
+      console.log("deliveryHealth", deliveryHealth)
       setDeliveryAddr(deliveryAddrTemp)
       setFirstName(deliveryHealth[0]);
       setLastName(deliveryHealth[1]);
@@ -254,7 +235,31 @@ export default function ConfirmDeliveryPage(props) {
 
   useEffect(() => { // 初始 render
     getLocation();
-  }, [clientLatitude, clientLongitude, confirmList, deliveryLocation]);
+  }, [clientLatitude, clientLongitude]);
+
+  useEffect(() => { // 初始 render
+    console.log(confirmList, deliveryLocationList)
+    if(confirmList === null || deliveryLocationList === null){
+      mapRender();
+    }else{
+      if(confirmList.length !== deliveryLocationList.length){
+        mapRender();
+      }
+    }
+  }, [confirmList, deliveryLocationList]);
+
+//   const interval = setInterval(() => {
+//     console.log(confirmList, deliveryLocationList)
+//     if(confirmList === null || deliveryLocationList === null){
+//       mapRender();
+//     }else{
+//       if(confirmList.length !== deliveryLocationList.length){
+//         mapRender();
+//       }else{
+//         clearInterval(interval)
+//       }
+//     }
+// }, 5000);
 
   useEffect(() => { // 初始 render
     getaccount();
@@ -263,9 +268,6 @@ export default function ConfirmDeliveryPage(props) {
   useEffect(() => { // 初始 render
     getDelivery();
     // chooseNotDelivery();
-    if (confirm === null ){
-      comfirmGeolocation();
-  }
   }, [web3, contract]);
 
   useEffect(() => { // 初始 render
@@ -387,6 +389,13 @@ export default function ConfirmDeliveryPage(props) {
       <Button
       onClick={()=>{
         comfirmGeolocation()
+      }
+      }></Button>
+     <Button
+      onClick={()=>{
+        console.log("history")
+        // contract.methods.FinishMatch("0x5108f6abF7464d70c59147De5333C9a0faF70677", "No. 16-1, Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan").send({from: "0x5108f6abF7464d70c59147De5333C9a0faF70677"})
+        contract.methods.FinishMatch("0x5108f6abF7464d70c59147De5333C9a0faF70677", "No.16, Sec. 2, Zhongshan N. Rd., Zhongshan Dist., Taipei City 104, Taiwan (R.O.C.)").send({from: "0x5108f6abF7464d70c59147De5333C9a0faF70677"})
       }
       }></Button>
       {/* <Footer /> */}
