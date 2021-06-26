@@ -44,10 +44,10 @@ export default function LandingPage(props) {
         brand="Welcome to No-Covid"
         rightLinks={<MyHeaderLinks />}
         fixed
-        changeColorOnScroll={{
-          height: 100,
-          color: "transparent",
-        }}
+        // changeColorOnScroll={{
+        //   height: 100,
+        //   color: "transparent",
+        // }}
         {...rest}
       />
       <div

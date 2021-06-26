@@ -224,9 +224,10 @@ export default function ActionPage(props) {
             setTotal(result1[4]);
             setOrderName(Object.values(result2));
 
+            geocode(result1[1], setClientLatitude, setClientLongitude);
             geocode(result1[3], setRestaurantLatitude, setRestaurantLongitude);
-            setClientLatitude(25);
-            setClientLongitude(121.5);
+            // setClientLatitude(25);
+            // setClientLongitude(121.5);
             // console.log(orderResult);
             // console.log(orderName);
             // console.log(realAddress, phone, total);

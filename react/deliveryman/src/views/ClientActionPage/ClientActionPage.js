@@ -137,7 +137,7 @@ export default function ActionPage(props) {
 
     const sendDeliveryRate = () => {
       console.log(clientAddr, deliveryAddr, deliveryRate)
-      contract.methods.OrderArrive().send({from: clientAddr})
+      //contract.methods.OrderArrive().call({from: clientAddr})
       contract.methods.RateDeliver(deliveryAddr, deliveryRate).send({from: clientAddr})
       console.log(clientAddr, "send", deliveryAddr, deliveryRate, "stars")
     }
