@@ -35,7 +35,7 @@ export default function ActionPage(props) {
 
     loader.load().then(() => {
         const map = new google.maps.Map(document.getElementById("mapClientAction"), {
-          center: { lat: latlng.lat, lng: latlng.lng },
+          center: { lat: clientLatitude, lng: clientLongitude },
           zoom: 12,
         });
 
