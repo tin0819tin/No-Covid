@@ -75,7 +75,7 @@ export default function OrderPage(props) {
   };
   
   const setUpOrder = (num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake, address, phone, costs) => {
-    const restaurant_address = "No. 16-1, Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan"
+    const restaurant_address = "Aly. 14, Ln. 283, Sec. 3, Roosevelt Rd., Da’an Dist., Taipei City, Taiwan"
     contract.methods.UploadOrder([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut,  num_macaron, num_milkshake], address,  phone, restaurant_address, costs).send({from: clientAddr});
     console.log(clientAddr, "order")
     console.log([num_chocolate_cake, num_cupcake, num_ice_cream, num_donut, num_macaron, num_milkshake], address, phone, restaurant_address, costs)

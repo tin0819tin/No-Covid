@@ -34,8 +34,6 @@ export default function ActionPage(props) {
     const [mealMessage, setMealMessage] = useState("Your meal is coming...")
 
     loader.load().then(() => {
-        const latlng = { lat: 25.046891, lng: 121.516602 }; // 台北車站的經緯度
-
         const map = new google.maps.Map(document.getElementById("mapClientAction"), {
           center: { lat: latlng.lat, lng: latlng.lng },
           zoom: 12,
@@ -67,7 +65,7 @@ export default function ActionPage(props) {
         };
 
         var marker = new google.maps.Marker({
-            position: latlng,
+            position: { lat: 25.017896, lng: 121.532601 },
             icon: iconRestaurant,
             map: map
         });
