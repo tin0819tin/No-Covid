@@ -90,6 +90,7 @@ Pick your identity on the `Landing Page`.
 - [x] Store the health status of delivery man on Blockchain(Ganache).
 - [x] Store the delivery details on Blockchain(Ganache).
 - [x] Render the geolocation of delivery man, restaurant and customer using Google Map API.
+- [x] Decide whether delivery man is risky by measuring delivery history with latest COVID hot spots. 
 - [x] Utilize IPFS to store images on IPFS node. 
 
 
