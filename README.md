@@ -15,6 +15,7 @@
 
 ### Prerequisite
 - Install [Ganache](https://www.trufflesuite.com/ganache) and [Truffle suite](https://www.trufflesuite.com/truffle) as local blockchain.
+- Install [Metamask extension](https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn) and import accounts from Ganache by private key.
 - Sign up in [Google Cloud](https://developers.google.com/maps/documentation/javascript/get-api-key) and get API key to enable Map Javascript API.
 - Create an environment setting file `.env` under `react/deliveryman/src` and put the API key under it.
 ```shell
@@ -32,6 +33,13 @@ $ git clone https://github.com/tin0819tin/No-Covid.git
 2. Create a workspace in Ganache and upload `truffle-config.js`.
 
 <p align=center><img src="./react/deliveryman/src/assets/img/ganache.gif" width="1000"/></p>
+
+### Metamask Setup
+1. Open the Metamask Setting and select Network.
+2. Enter the following parameters for connecting Metamask with Ganache.
+
+<p align=center><img src="./react/deliveryman/src/assets/img/metamask.gif" width="1000"/></p>
+
 
 ### Build Smart Contract 
 
