@@ -3,6 +3,7 @@
 <img src="./react/deliveryman/src/assets/img/Food_NoCovid.JPG" width="400" />
 <br>
 <a target="_blank"><img href="https://www.trufflesuite.com/truffle" src="https://img.shields.io/badge/Truffle-%3E%3D5.1.10-brown.svg"></a>
+<a target="_blank"><img href="https://www.trufflesuite.com/ganache" src="https://img.shields.io/badge/Ganache-download-yellow.svg"></a>
 </p>
 
 ***
@@ -11,6 +12,8 @@
 
 ## :checkered_flag: Getting start
 **To learn more about this project please check this** [demo video](https://drive.google.com/drive/folders/1Fi8zdrgk-a7n5zhN43EWr_pR8y3mGjW0) and [slide](https://docs.google.com/presentation/d/1wc0fhlDLWS_E5UqvkS5xQBxlCQ4HZM_bQFfL4-1p2IY/edit#slide=id.p).
+
+### Prerequisite
 
 
 
@@ -47,9 +50,26 @@ $ npm start
 ```
 
 ## :books: Usage
+Pick your identity on the `Landing Page`.
+
+Delivery man
+1. Login and upload health status.
+2. Wait for delivery match.
+3. Start deliver!
+4. Upload food image after delivered.
+
+Customer
+1. Start to order.
+2. Confirm delivery man.
+3. Wait for the meal.
+4. Get the meal and rate the delivery man.
 
 
 ## :round_pushpin: Features
+- [x] Store the health status of delivery man on Blockchain(Ganache).
+- [x] Store the delivery details on Blockchain(Ganache).
+- [x] Render the geolocation of delivery man, restaurant and customer using Google Map API.
+- [x] Utilize IPFS to store image on IPFS node. 
 
 
  
