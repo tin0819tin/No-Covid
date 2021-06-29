@@ -35,7 +35,7 @@ $ git clone https://github.com/tin0819tin/No-Covid.git
 <p align=center><img src="./react/deliveryman/src/assets/img/ganache.gif" width="1000"/></p>
 
 ### Metamask Setup
-1. Open the Metamask Setting and select Network.
+1. Open the Metamask Setting and select Network to add a new one.
 2. Enter the following parameters for connecting Metamask with Ganache.
 
 <p align=center><img src="./react/deliveryman/src/assets/img/metamask.gif" width="1000"/></p>
