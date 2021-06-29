@@ -14,8 +14,12 @@
 **To learn more about this project please check this** [demo video](https://drive.google.com/drive/folders/1Fi8zdrgk-a7n5zhN43EWr_pR8y3mGjW0) and [slide](https://docs.google.com/presentation/d/1wc0fhlDLWS_E5UqvkS5xQBxlCQ4HZM_bQFfL4-1p2IY/edit#slide=id.p).
 
 ### Prerequisite
-
-
+- Install [Ganache](https://www.trufflesuite.com/ganache) and [Truffle suite](https://www.trufflesuite.com/truffle) as local blockchain.
+- Sign up in [Google Cloud](https://developers.google.com/maps/documentation/javascript/get-api-key) and get API key to enable Map Javascript API.
+- Create an environment setting file `.env` under `react/deliveryman/src` and put the API key under it.
+```shell
+REACT_APP_API_KEY_1={Your_API_Key}
+```
 
 ## :hammer_and_pick: Build from source 
 First clone the project to local.
@@ -24,6 +28,8 @@ $ git clone https://github.com/tin0819tin/No-Covid.git
 ```
 
 ### Smart Contract
+
+First open Ganache in your local or enable Ganache-cli.
 
 Build the truffle contract.
 ```shell
@@ -52,13 +58,13 @@ $ npm start
 ## :books: Usage
 Pick your identity on the `Landing Page`.
 
-Delivery man
+**Delivery man**
 1. Login and upload health status.
 2. Wait for delivery match.
 3. Start deliver!
 4. Upload food image after delivered.
 
-Customer
+**Customer**
 1. Start to order.
 2. Confirm delivery man.
 3. Wait for the meal.
@@ -69,7 +75,7 @@ Customer
 - [x] Store the health status of delivery man on Blockchain(Ganache).
 - [x] Store the delivery details on Blockchain(Ganache).
 - [x] Render the geolocation of delivery man, restaurant and customer using Google Map API.
-- [x] Utilize IPFS to store image on IPFS node. 
+- [x] Utilize IPFS to store images on IPFS node. 
 
 
  
