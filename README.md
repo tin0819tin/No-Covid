@@ -18,7 +18,7 @@ First clone the project to local.
 $ git clone https://github.com/tin0819tin/No-Covid.git
 ```
 
-##### Smart Contract
+**Smart Contract**
 Build the truffle contract.
 ```shell
 $ truffle compile
@@ -30,10 +30,16 @@ $ truffle migrate
 
 Then put the directory `build/contract` under `react/deliveryman/src`.
 
-##### Frontend React App
+**Frontend Decentralized React App(Dapp)**
+Build the required package through npm
 ```shell
-cd react/deliveryman
-npm start
+$ cd react/deliveryman
+$ npm install
+```
+
+Start the Dapp
+```shell
+$ npm start
 ```
 
 ## Usage
