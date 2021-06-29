@@ -69,10 +69,10 @@ Pick your identity on the `Landing Page`.
 4. Upload food image after delivered.
 
 **Customer**
-1. Start to order.
+1. Make the order.
 2. Confirm delivery man.
 3. Wait for the meal.
-4. Get the meal and rate the delivery man.
+4. Get the meal and rate the delivery man:star2:.
 
 
 ## :round_pushpin: Features
