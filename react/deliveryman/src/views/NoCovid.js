@@ -85,7 +85,7 @@ const NoCovid = () => {
                     <Route path="/order" render={(props) => <OrderPage {...props} web3={web3} contract={contract} />}  /> 
                     <Route path="/confirmDelivery" render={(props) => <ConfirmDeliveryPage {...props} web3={web3} contract={contract} />}  /> 
                     <Route path="/clientAction" render={(props) => <ClientActionPage {...props} web3={web3} contract={contract} />}  />  
-                    <Route path="/" component={Components} />
+                    <Route path="/" render={(props) => <LandingPage {...props} contract={contract} />}  />
                 </Switch>
             </Router>
         </div>
