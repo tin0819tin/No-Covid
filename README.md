@@ -60,7 +60,7 @@ $ npm start
 ```
 
 See the Landing Page on `http://localhost:3000` or `http://localhost:3000/landing`
-<p align="center"><img src="./react/deliveryman/src/assets/img/landing.jpg" width="400" /></p>
+<p align="center"><img src="./react/deliveryman/src/assets/img/landing.jpg" width="800" /></p>
 
 ## :books: Usage
 Pick your identity on the `Landing Page`.
