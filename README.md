@@ -27,9 +27,13 @@ First clone the project to local.
 $ git clone https://github.com/tin0819tin/No-Covid.git
 ```
 
-### Smart Contract
+### Setup
+1. First open Ganache in your local or enable Ganache-cli.
+2. Create a workspace in Ganache and upload `truffle-config.js`.
 
-First open Ganache in your local or enable Ganache-cli.
+<p align=center><img src="./react/deliveryman/src/assets/img/ganache.gif" width="1000"/></p>
+
+### Build Smart Contract 
 
 Build the truffle contract.
 ```shell
