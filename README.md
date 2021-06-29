@@ -74,7 +74,7 @@ See the Landing Page on `http://localhost:3000` or `http://localhost:3000/landin
 Pick your identity on the `Landing Page`.
 
 **Delivery man**
-1. Login and upload health status. `@Login Page`
+1. `/login` : Login and upload health status. 
 2. Wait for delivery match.
 3. Start deliver!
 4. Upload food image after delivered.
