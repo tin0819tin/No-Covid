@@ -1,6 +1,8 @@
 # Food No-Covid
 <p align="center">
 <img src="./react/deliveryman/src/assets/img/Food_NoCovid.JPG" width="400" />
+<br>
+<a target="_blank"><img href="https://www.trufflesuite.com/truffle" src="https://img.shields.io/badge/Truffle-%3E%3D5.1.10-brown.svg"></a>
 </p>
 
 ***
@@ -44,10 +46,10 @@ Start the Dapp
 $ npm start
 ```
 
-## Usage
+## :books: Usage
 
 
-## Task
+## :round_pushpin: Features
 
 
  
