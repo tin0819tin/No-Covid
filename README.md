@@ -75,15 +75,15 @@ Pick your identity on the `Landing Page`.
 
 **Delivery man**
 1. `/login` : Login and upload health status. 
-2. Wait for delivery match.
-3. Start deliver!
-4. Upload food image after delivered.
+2. `/action` : Wait for delivery match.
+3. `/action` : Start deliver!
+4. `/arrive` : Upload food image after delivered.
 
 **Customer**
-1. Make the order.
-2. Confirm delivery man.
-3. Wait for the meal.
-4. Get the meal and rate the delivery man:star2:.
+1. `/order` : Make the order.
+2. `/confirmDelivery` : Confirm delivery man.
+3. `/clientAction` : Wait for the meal.
+4. `/clientAction` : Get the meal and rate the delivery man:star2:.
 
 
 ## :round_pushpin: Features
