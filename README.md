@@ -27,7 +27,7 @@ First clone the project to local.
 $ git clone https://github.com/tin0819tin/No-Covid.git
 ```
 
-### Setup
+### Ganache Setup
 1. First open Ganache in your local or enable Ganache-cli.
 2. Create a workspace in Ganache and upload `truffle-config.js`.
 
