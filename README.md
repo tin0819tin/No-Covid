@@ -11,7 +11,7 @@
 ***
 
 ## :checkered_flag: Getting start
-**To learn more about this project please check this** [demo video](https://www.youtube.com/watch?v=Glj4ZmmdCI8&t=72s) and [slide](https://docs.google.com/presentation/d/1wc0fhlDLWS_E5UqvkS5xQBxlCQ4HZM_bQFfL4-1p2IY/edit#slide=id.p).
+**To learn more about this project please check this** [demo video](https://www.youtube.com/watch?v=Glj4ZmmdCI8&t) and [slide](https://docs.google.com/presentation/d/1wc0fhlDLWS_E5UqvkS5xQBxlCQ4HZM_bQFfL4-1p2IY/edit#slide=id.p).
 
 ### Prerequisite
 - Install [Ganache](https://www.trufflesuite.com/ganache) and [Truffle suite](https://www.trufflesuite.com/truffle) as local blockchain.
